@@ -66,8 +66,7 @@ class MainView extends PIXI.Container {
     // Reposition view to center it horizontally on the window
     const scaledWidth = Math.floor(canvasWidth / ratio);
     const scaledHeight = Math.floor(canvasHeight / ratio);
-    this.x = Math.floor((scaledWidth -
-      (this.gameView.map.dimensions.width + 8)) / 2);
+    this.x = Math.floor((scaledWidth - (this.gameView.map.dimensions.width + 8)) / 2);
 
     this.startButton.position.set(
       Math.floor((actualWidth - this.startButton.width) / 2), actualHeight +
@@ -76,6 +75,11 @@ class MainView extends PIXI.Container {
       actualWidth - this.quitButton.width, actualHeight +
       Math.floor((canvasHeight - actualHeight - STYLE_BUTTON_QUIT.fontSize) / 2) + 4);
 
+  }
+
+  // Called each frame with delta time in milliseconds
+  onUpdate(deltaTime) {
+    this.gameView.onUpdate(deltaTime);
   }
 }
 

@@ -78,6 +78,11 @@ class Entity extends PIXI.Container {
 
     return validPush;
   }
+
+  // Called each frame with delta time in milliseconds
+  onUpdate(deltaTime) {
+    // Do nothing, extending classes will add behaviour
+  }
 }
 
 export { Entity };

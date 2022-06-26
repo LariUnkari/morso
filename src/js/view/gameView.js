@@ -1,3 +1,4 @@
+import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
 import { Direction, CardinalDirections } from "../map/direction.js";
 import { Map } from "../map/map.js";
@@ -43,8 +44,9 @@ class GameView extends PIXI.Container {
     let monster, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
-      monster = new MonsterBig("entity_monster_big", { killScore:100 });
       this.enemies[i] = monster;
+      monster = new MonsterBig("MonsterBig" + (i + 1), "entity_monster_big",
+        { canMove:true, moveInterval:800, killScore:100 });
       this.addChild(monster);
 
       x = this.map.grid.width - 2 - Math.floor(3 * Math.random());
@@ -64,6 +66,14 @@ class GameView extends PIXI.Container {
       this.removeChild(this.enemies[i]);
     }
     this.enemies = [];
+  }
+
+  // Called each frame with delta time in milliseconds
+  onUpdate(deltaTime) {
+    //console.log("Game tick time is now " + tickTime + "ms, enemies: " + GameData.enemies.length);
+    for (let i = 0; i < GameData.enemies.length; i++) {
+      GameData.enemies[i].onUpdate(deltaTime);
+    }
   }
 
   onInputLeft(isDown) {
