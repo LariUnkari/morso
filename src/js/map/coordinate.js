@@ -20,7 +20,8 @@ class Coordinate {
   }
 
   equals(coordinate) {
-    return this.x === coordinate.x && this.y === coordinate.y;
+    return coordinate !== undefined && coordinate !== null &&
+      this.x === coordinate.x && this.y === coordinate.y;
   }
 
   toString() {
