@@ -53,6 +53,8 @@ class GameView extends PIXI.Container {
       startTile = FillSearch.findNearestTileOfType(GameData.map,
         new Coordinate(x, y), TileType.Floor);
       monster.setCoordinate(startTile.coordinate);
+
+      GameData.isGameOn = true;
     }
   }
 
@@ -64,11 +66,18 @@ class GameView extends PIXI.Container {
       this.removeChild(GameData.enemies[i]);
     }
     GameData.enemies = [];
+    GameData.gameTime = 0;
+    GameData.tickTime = 0;
   }
 
   // Called each frame with delta time in milliseconds
   onUpdate(deltaTime) {
     //console.log("Game tick time is now " + tickTime + "ms, enemies: " + GameData.enemies.length);
+    if (!GameData.isGameOn) { return; }
+
+    GameData.gameTime += deltaTime;
+    GameData.tickTime = Math.floor(GameData.gameTime);
+
     for (let i = 0; i < GameData.enemies.length; i++) {
       GameData.enemies[i].onUpdate(deltaTime);
     }

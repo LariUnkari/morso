@@ -4,6 +4,7 @@ class GameData {
     this.player = null;
     this.enemies = [];
     this.score = 0;
+    this.isGameOn = false;
     this.gameTime = 0;
     this.tickTime = 0;
   }

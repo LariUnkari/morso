@@ -24,8 +24,6 @@ class Game {
 
   onUpdate() {
     //console.log("Update deltaTime: " + this.application.ticker.deltaMS.toFixed(3) + "ms");
-    GameData.gameTime += this.application.ticker.deltaMS;
-    GameData.tickTime = Math.floor(GameData.gameTime);
     this.mainView.onUpdate(this.application.ticker.deltaMS);
   }
 
