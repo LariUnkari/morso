@@ -9,9 +9,9 @@ class Map extends PIXI.Container {
   constructor(width, height, wall_ratio, resources) {
     super();
 
+    this.tiles = [];
     this.grid = { width, height };
     this.dimensions = { width:width*GRID_SCALE, height:height*GRID_SCALE };
-    this.tiles = [];
     this.wall_ratio = wall_ratio === undefined || Number.isNaN(wall_ratio) ?
       this.getRandomWallRatio() : this.getConstrainedWallRatio(wall_ratio);
 
@@ -35,7 +35,7 @@ class Map extends PIXI.Container {
         newTile = new Tile(coordinate, this.getRandomTileType(), id,
           GRID_SCALE, resources);
         gridPos = this.getGridPositionFromCoordinates(coordinate);
-        console.log("Tile " + newTile.id + " map grid position is " + gridPos.x + "," + gridPos.y);
+        //console.log("Tile " + newTile.id + " map grid position is " + gridPos.x + "," + gridPos.y);
         newTile.position.set(gridPos.x, gridPos.y);
         this.tiles[x][y] = newTile;
         this.gridContainer.addChild(newTile);

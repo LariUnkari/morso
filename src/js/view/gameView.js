@@ -1,7 +1,9 @@
 import { Coordinate } from "../map/coordinate.js";
 import { Direction, CardinalDirections } from "../map/direction.js";
 import { Map } from "../map/map.js";
+import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
+import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
 
 class GameView extends PIXI.Container {
@@ -9,12 +11,11 @@ class GameView extends PIXI.Container {
     super();
 
     this.resources = resources;
-    this.inputHandler = new InputHandler();
     this.map = new Map(40, 21, undefined, this.resources);
-    this.player = new Player(this.map, resources);
+    this.player = new Player(resources);
     this.addChild(this.map, this.player);
 
-    this.player.setCoordinate(new Coordinate(5, 10), this.map);
+    this.inputHandler = new InputHandler();
 
     this.arrowLeft = this.inputHandler.setupInputKey(
       "ArrowLeft", 0x25, this.onInputLeft.bind(this));
@@ -24,6 +25,10 @@ class GameView extends PIXI.Container {
       "ArrowRight", 0x27, this.onInputRight.bind(this));
     this.arrowDown = this.inputHandler.setupInputKey(
       "ArrowDown", 0x28, this.onInputDown.bind(this));
+
+      const startTile = FillSearch.findNearestTileOfType(
+        new Coordinate(5, 10), TileType.Floor, this.map)
+      this.player.setCoordinate(startTile.coordinate, this.map);
   }
 
   onInputLeft(isDown) {

@@ -2,7 +2,7 @@ import { Coordinate } from "../map/coordinate.js";
 import { TileType } from "../map/tileType.js";
 
 class Player extends PIXI.Container {
-  constructor(map, resources) {
+  constructor(resources) {
     super();
 
     this.resources = resources;

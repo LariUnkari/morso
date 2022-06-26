@@ -20,9 +20,9 @@ class Tile extends PIXI.Container {
     //this.sprite.endFill();
     this.addChild(this.sprite);
 
-    console.log("Created tile of type " + this.type + " '" +
-      TileNames[this.type] + "' at coordinate " + this.coordinate.toString() +
-      ", grid size " + size);
+    //console.log("Created tile of type " + this.type + " '" +
+    //  TileNames[this.type] + "' at coordinate " + this.coordinate.toString() +
+    //  ", grid size " + size);
   }
 
   setType(type) {
