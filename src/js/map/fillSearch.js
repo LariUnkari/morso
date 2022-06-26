@@ -24,7 +24,7 @@ var findNearestTileOfTypeStepper = (map, coordinate, type, closed, result) => {
     if (map.isCoordinateOutOfBounds(nextCoordinate)) { continue; }
     if (closed[map.getCoordinateId(nextCoordinate)] !== undefined) { continue; }
 
-    findNearestTileOfTypeStepper(nextCoordinate, type, map, closed, result);
+    findNearestTileOfTypeStepper(map, nextCoordinate, type, closed, result);
     if (result.found === true) { break; }
   }
 };
