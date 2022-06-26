@@ -34,27 +34,42 @@ class Entity extends PIXI.Container {
     this.setCoordinate(this.coordinate.plus(direction));
   }
 
-  tryMove(direction) {
+  checkMove(direction) {
     const desiredPos = this.coordinate.plus(direction);
-    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return; }
+    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
 
     const tile = GameData.map.getTileAtCoordinates(desiredPos);
-    if (tile === null || tile.type == TileType.None) { return; }
+    if (tile === null || tile.type == TileType.None) { return false; }
 
-    if (tile.type === TileType.Wall && this.canPush) {
-      if (!this.tryPush(tile, direction)) { return; }
+    if (tile.type === TileType.Wall) {
+      if (!this.canPush || !this.couldPush(tile, direction)) { return false; }
+    }
+
+    return true;
+  }
+
+  tryMove(direction) {
+    const desiredPos = this.coordinate.plus(direction);
+    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
+
+    const tile = GameData.map.getTileAtCoordinates(desiredPos);
+    if (tile === null || tile.type == TileType.None) { return false; }
+
+    if (tile.type === TileType.Wall) {
+      if (!this.canPush || !this.tryPush(tile, direction)) { return false; }
     }
 
     this.move(direction);
+    return true;
   }
 
-  tryPush(fromTile, direction) {
+  checkPush(fromTile, direction) {
     if (direction.x === 0 && direction.y === 0) {
       return false;
     }
 
     let tile;
-    let validPush = false;
+    const result = { isValid:false, target:null };
     const coordinate = fromTile.coordinate.plus(direction);
 
     while (!GameData.map.isCoordinateOutOfBounds(coordinate)) {
@@ -62,23 +77,30 @@ class Entity extends PIXI.Container {
 
       if (tile === undefined) {
         console.error("Error getting tile to push at " + coordinate.toString());
-        return false;
+        break;
       }
 
       if (tile.type === TileType.Floor) {
-        validPush = true;
+        result.isValid = true;
+        result.target = tile;
         break;
       }
 
       coordinate.offset(direction);
     }
 
-    if (validPush) {
-      tile.setType(TileType.Wall);
+    return result;
+  }
+
+  tryPush(fromTile, direction) {
+    const push = this.checkPush(fromTile, direction);
+
+    if (push.isValid) {
+      push.target.setType(TileType.Wall);
       fromTile.setType(TileType.Floor);
     }
 
-    return validPush;
+    return push.isValid;
   }
 
   // Called each frame with delta time in milliseconds
