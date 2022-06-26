@@ -3,6 +3,7 @@ import { Direction, CardinalDirections } from "../map/direction.js";
 import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
+import { MonsterBig } from "../entities/monsterBig.js";
 import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
 
@@ -31,42 +32,59 @@ class GameView extends PIXI.Container {
 
   startGame() {
     this.map.generate();
-    const startTile = FillSearch.findNearestTileOfType(
+
+    let startTile = FillSearch.findNearestTileOfType(
       new Coordinate(5, 10), TileType.Floor, this.map);
+
     this.player.setCoordinate(startTile.coordinate, this.map);
     this.player.visible = true;
     this.player.enable();
+
+    let monster, x, y;
+    const enemyCount = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < enemyCount; i++) {
+      monster = new MonsterBig("entity_monster_big", { killScore:100 });
+      this.enemies[i] = monster;
+      this.addChild(monster);
+
+      x = this.map.grid.width - 2 - Math.floor(3 * Math.random());
+      y = Math.floor((i + 1) * this.map.grid.height / (enemyCount + 1));
+
+      startTile = FillSearch.findNearestTileOfType(new Coordinate(x, y),
+        TileType.Floor, this.map);
+      monster.setCoordinate(startTile.coordinate, this.map);
+    }
   }
 
   quitGame() {
     this.map.clear();
     this.player.disable();
     this.player.visible = false;
+    for (let i = 0; i < this.enemies.length; i++) {
+      this.removeChild(this.enemies[i]);
+    }
+    this.enemies = [];
   }
 
   onInputLeft(isDown) {
-    //console.log("Input! Left: " + (isDown ? "down" : "up"));
     if (this.player.isEnabled) {
       if (isDown) { this.player.tryMove(Direction.Left, this.map); }
     }
   }
 
   onInputUp(isDown) {
-    //console.log("Input! Up: " + (isDown ? "down" : "up"));
     if (this.player.isEnabled) {
       if (isDown) { this.player.tryMove(Direction.Up, this.map); }
     }
   }
 
   onInputRight(isDown) {
-    //console.log("Input! Right: " + (isDown ? "down" : "up"));
     if (this.player.isEnabled) {
       if (isDown) { this.player.tryMove(Direction.Right, this.map); }
     }
   }
 
   onInputDown(isDown) {
-    //console.log("Input! Down: " + (isDown ? "down" : "up"));
     if (this.player.isEnabled) {
       if (isDown) { this.player.tryMove(Direction.Down, this.map); }
     }
