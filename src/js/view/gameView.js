@@ -7,13 +7,14 @@ import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
 
 class GameView extends PIXI.Container {
-  constructor(resources) {
+  constructor() {
     super();
 
-    this.resources = resources;
-    this.player = new Player(resources);
+    this.enemies = [];
+
+    this.player = new Player("entity_player", { canPush:true });
     this.player.visible = false;
-    this.map = new Map(40, 21, undefined, this.resources);
+    this.map = new Map(40, 21, undefined);
     this.addChild(this.map, this.player);
 
     this.inputHandler = new InputHandler();

@@ -6,10 +6,8 @@ const GRID_SCALE = 32;
 const WALL_RATIO_RANGE = { min:0.1, max:0.4 };
 
 class Map extends PIXI.Container {
-  constructor(width, height, wall_ratio, resources) {
+  constructor(width, height, wall_ratio) {
     super();
-
-    this.resources = resources;
 
     this.grid = { width, height };
     this.dimensions = { width:width*GRID_SCALE, height:height*GRID_SCALE };
@@ -35,7 +33,7 @@ class Map extends PIXI.Container {
       for (let y = 0; y < this.grid.height; y++) {
         coordinate = new Coordinate(x, y);
         id = this.getCoordinateId(coordinate);
-        newTile = new Tile(coordinate, TileType.None, id, GRID_SCALE, this.resources);
+        newTile = new Tile(coordinate, TileType.None, id, GRID_SCALE);
         this.tiles[x][y] = newTile;
 
         gridPos = this.getGridPositionFromCoordinates(coordinate);

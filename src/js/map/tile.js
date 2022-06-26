@@ -2,10 +2,9 @@ import { TileType, TileNames } from "./tileType.js";
 import { Coordinate } from "./coordinate.js";
 
 class Tile extends PIXI.Container {
-  constructor(coordinate, type, id, size, resources) {
+  constructor(coordinate, type, id, size) {
     super();
 
-    this.resources = resources;
     this.coordinate = coordinate;
     this.id = id;
     this.type = type;
@@ -32,13 +31,13 @@ class Tile extends PIXI.Container {
 
   getTextureForTileType(type) {
     if (type === TileType.None) {
-      return this.resources.tile_void.texture;
+      return PIXI.Texture.from("tile_void");
     }
     if (type === TileType.Floor) {
-      return this.resources.tile_floor.texture;
+      return PIXI.Texture.from("tile_floor");
     }
     if (type === TileType.Wall) {
-      return this.resources.tile_wall.texture;
+      return PIXI.Texture.from("tile_wall");
     }
     return null;
   }
