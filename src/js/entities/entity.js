@@ -1,10 +1,12 @@
+import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
 import { TileType } from "../map/tileType.js";
 
 class Entity extends PIXI.Container {
-  constructor(spriteName, options) {
+  constructor(name, spriteName, options) {
     super();
 
+    this.name = name;
     this.sprite = new PIXI.Sprite(PIXI.Texture.from(spriteName));
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
@@ -22,31 +24,31 @@ class Entity extends PIXI.Container {
     this.isEnabled = false;
   }
 
-  setCoordinate(coordinate, map) {
+  setCoordinate(coordinate) {
     this.coordinate = coordinate;
     this.position.copyFrom(
-      map.getGridPositionFromCoordinatesWithOffset(coordinate));
+      GameData.map.getGridPositionFromCoordinatesWithOffset(coordinate));
   }
 
-  move(direction, map) {
-    this.setCoordinate(this.coordinate.plus(direction), map);
+  move(direction) {
+    this.setCoordinate(this.coordinate.plus(direction));
   }
 
-  tryMove(direction, map) {
+  tryMove(direction) {
     const desiredPos = this.coordinate.plus(direction);
-    if (map.isCoordinateOutOfBounds(desiredPos)) { return; }
+    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return; }
 
-    const tile = map.getTileAtCoordinates(desiredPos);
+    const tile = GameData.map.getTileAtCoordinates(desiredPos);
     if (tile === null || tile.type == TileType.None) { return; }
 
     if (tile.type === TileType.Wall && this.canPush) {
-      if (!this.tryPush(tile, direction, map)) { return; }
+      if (!this.tryPush(tile, direction)) { return; }
     }
 
-    this.move(direction, map);
+    this.move(direction);
   }
 
-  tryPush(fromTile, direction, map) {
+  tryPush(fromTile, direction) {
     if (direction.x === 0 && direction.y === 0) {
       return false;
     }
@@ -55,8 +57,8 @@ class Entity extends PIXI.Container {
     let validPush = false;
     const coordinate = fromTile.coordinate.plus(direction);
 
-    while (!map.isCoordinateOutOfBounds(coordinate)) {
-      tile = map.getTileAtCoordinates(coordinate);
+    while (!GameData.map.isCoordinateOutOfBounds(coordinate)) {
+      tile = GameData.map.getTileAtCoordinates(coordinate);
 
       if (tile === undefined) {
         console.error("Error getting tile to push at " + coordinate.toString());

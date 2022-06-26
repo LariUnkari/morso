@@ -1,13 +1,13 @@
 import { Direction, CardinalDirections } from "./direction.js";
 
-var findNearestTileOfType = (coordinate, type, map) => {
+var findNearestTileOfType = (map, coordinate, type) => {
 
   const result = { found:false, tile:null };
-  findNearestTileOfTypeStepper(coordinate, type, map, {}, result);
+  findNearestTileOfTypeStepper(map, coordinate, type, {}, result);
   return result.found ? result.tile : null;
 };
 
-var findNearestTileOfTypeStepper = (coordinate, type, map, closed, result) => {
+var findNearestTileOfTypeStepper = (map, coordinate, type, closed, result) => {
   result.tile = map.getTileAtCoordinates(coordinate);
 
   if (result.tile.type === type) {

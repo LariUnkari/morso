@@ -12,12 +12,10 @@ class GameView extends PIXI.Container {
   constructor() {
     super();
 
-    this.enemies = [];
-
-    this.player = new Player("entity_player", { canPush:true });
-    this.player.visible = false;
-    this.map = new Map(40, 21, undefined);
-    this.addChild(this.map, this.player);
+    GameData.player = new Player("Player", "entity_player", { canPush:true });
+    GameData.player.visible = false;
+    GameData.map = new Map(40, 21, undefined);
+    this.addChild(GameData.map, GameData.player);
 
     this.inputHandler = new InputHandler();
 
@@ -32,40 +30,40 @@ class GameView extends PIXI.Container {
   }
 
   startGame() {
-    this.map.generate();
+    GameData.map.generate();
 
-    let startTile = FillSearch.findNearestTileOfType(
-      new Coordinate(5, 10), TileType.Floor, this.map);
+    let startTile = FillSearch.findNearestTileOfType(GameData.map,
+      new Coordinate(5, 10), TileType.Floor);
 
-    this.player.setCoordinate(startTile.coordinate, this.map);
-    this.player.visible = true;
-    this.player.enable();
+    GameData.player.setCoordinate(startTile.coordinate);
+    GameData.player.visible = true;
+    GameData.player.enable();
 
     let monster, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
-      this.enemies[i] = monster;
       monster = new MonsterBig("MonsterBig" + (i + 1), "entity_monster_big",
         { canMove:true, moveInterval:800, killScore:100 });
+      GameData.enemies[i] = monster;
       this.addChild(monster);
 
-      x = this.map.grid.width - 2 - Math.floor(3 * Math.random());
-      y = Math.floor((i + 1) * this.map.grid.height / (enemyCount + 1));
+      x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
+      y = Math.floor((i + 1) * GameData.map.grid.height / (enemyCount + 1));
 
-      startTile = FillSearch.findNearestTileOfType(new Coordinate(x, y),
-        TileType.Floor, this.map);
-      monster.setCoordinate(startTile.coordinate, this.map);
+      startTile = FillSearch.findNearestTileOfType(GameData.map,
+        new Coordinate(x, y), TileType.Floor);
+      monster.setCoordinate(startTile.coordinate);
     }
   }
 
   quitGame() {
-    this.map.clear();
-    this.player.disable();
-    this.player.visible = false;
-    for (let i = 0; i < this.enemies.length; i++) {
-      this.removeChild(this.enemies[i]);
+    GameData.map.clear();
+    GameData.player.disable();
+    GameData.player.visible = false;
+    for (let i = 0; i < GameData.enemies.length; i++) {
+      this.removeChild(GameData.enemies[i]);
     }
-    this.enemies = [];
+    GameData.enemies = [];
   }
 
   // Called each frame with delta time in milliseconds
@@ -77,26 +75,26 @@ class GameView extends PIXI.Container {
   }
 
   onInputLeft(isDown) {
-    if (this.player.isEnabled) {
-      if (isDown) { this.player.tryMove(Direction.Left, this.map); }
+    if (GameData.player.isEnabled) {
+      if (isDown) { GameData.player.tryMove(Direction.Left); }
     }
   }
 
   onInputUp(isDown) {
-    if (this.player.isEnabled) {
-      if (isDown) { this.player.tryMove(Direction.Up, this.map); }
+    if (GameData.player.isEnabled) {
+      if (isDown) { GameData.player.tryMove(Direction.Up); }
     }
   }
 
   onInputRight(isDown) {
-    if (this.player.isEnabled) {
-      if (isDown) { this.player.tryMove(Direction.Right, this.map); }
+    if (GameData.player.isEnabled) {
+      if (isDown) { GameData.player.tryMove(Direction.Right); }
     }
   }
 
   onInputDown(isDown) {
-    if (this.player.isEnabled) {
-      if (isDown) { this.player.tryMove(Direction.Down, this.map); }
+    if (GameData.player.isEnabled) {
+      if (isDown) { GameData.player.tryMove(Direction.Down); }
     }
   }
 }

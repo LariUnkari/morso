@@ -1,3 +1,4 @@
+import GameData from "../gameData.js";
 import { GameView } from "./gameView.js";
 
 const STYLE_BUTTON_START = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
@@ -51,13 +52,13 @@ class MainView extends PIXI.Container {
   resizeView(canvasWidth, canvasHeight) {
     // Scale game view to fit desired view dimensions based on map
     const ratio = Math.min(
-      (canvasWidth - 8) / this.gameView.map.dimensions.width,
-      (canvasHeight - 8) / (this.gameView.map.dimensions.height + 80));
+      (canvasWidth - 8) / GameData.map.dimensions.width,
+      (canvasHeight - 8) / (GameData.map.dimensions.height + 80));
     this.gameView.scale.set(ratio);
 
     // Scale frame to fit around map view
-    const actualWidth = Math.ceil(this.gameView.map.dimensions.width * ratio);
-    const actualHeight = Math.ceil(this.gameView.map.dimensions.height * ratio);
+    const actualWidth = Math.ceil(GameData.map.dimensions.width * ratio);
+    const actualHeight = Math.ceil(GameData.map.dimensions.height * ratio);
     this.frameOuter.scale.set(
       Math.ceil((actualWidth + 8) / 2), Math.ceil((actualHeight + 8) / 2));
     this.frameInner.scale.set(
@@ -66,7 +67,7 @@ class MainView extends PIXI.Container {
     // Reposition view to center it horizontally on the window
     const scaledWidth = Math.floor(canvasWidth / ratio);
     const scaledHeight = Math.floor(canvasHeight / ratio);
-    this.x = Math.floor((scaledWidth - (this.gameView.map.dimensions.width + 8)) / 2);
+    this.x = Math.floor((scaledWidth - (GameData.map.dimensions.width + 8)) / 2);
 
     this.startButton.position.set(
       Math.floor((actualWidth - this.startButton.width) / 2), actualHeight +
