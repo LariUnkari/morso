@@ -21,6 +21,7 @@ const main = () => {
 
   // load the textures we need
   app.loader.add("player", "assets/player.png")
+            .add("tile_void", "assets/tile_floor.png")
             .add("tile_floor", "assets/tile_floor.png")
             .add("tile_wall", "assets/tile_wall.png");
 

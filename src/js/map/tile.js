@@ -31,12 +31,16 @@ class Tile extends PIXI.Container {
   }
 
   getTextureForTileType(type) {
+    if (type === TileType.None) {
+      return this.resources.tile_void.texture;
+    }
     if (type === TileType.Floor) {
       return this.resources.tile_floor.texture;
     }
     if (type === TileType.Wall) {
       return this.resources.tile_wall.texture;
     }
+    return null;
   }
 
   getDebugString() {

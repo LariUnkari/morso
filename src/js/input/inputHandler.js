@@ -12,9 +12,7 @@ class InputHandler {
     //The `downHandler`
     key.downHandler = (event) => {
       if (event.keyCode === key.keyCode) {
-        //console.log("Input! Key " + key.name + "(" + key.keyCode + ") down event detected");
         if (key.isUp && key.callback !== undefined) {
-          //console.log("Input! Key value " + key.keyCode + ": down");
           key.callback(true);
         }
         key.isDown = true;
@@ -26,9 +24,7 @@ class InputHandler {
     //The `upHandler`
     key.upHandler = (event) => {
       if (event.keyCode === key.keyCode) {
-        //console.log("Input! Key " + key.name + "(" + key.keyCode + ") up event detected");
         if (key.isDown && key.callback !== undefined) {
-          //console.log("Input! Key value " + key.keyCode + ": up");
           key.callback(false);
         }
         key.isDown = false;

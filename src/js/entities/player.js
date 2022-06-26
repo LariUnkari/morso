@@ -10,7 +10,16 @@ class Player extends PIXI.Container {
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
 
+    this.isEnabled = false;
     this.coordinate = new Coordinate(0, 0);
+  }
+
+  enable() {
+    this.isEnabled = true;
+  }
+
+  disable() {
+    this.isEnabled = false;
   }
 
   setCoordinate(coordinate, map) {
@@ -26,22 +35,17 @@ class Player extends PIXI.Container {
   tryMove(direction, map) {
     const desiredPos = this.coordinate.plus(direction);
     if (map.isCoordinateOutOfBounds(desiredPos)) {
-      //console.log("Unable to move to out of bounds position " + desiredPos.x + "," + desiredPos.y);
       return;
     }
 
     const tile = map.getTileAtCoordinates(desiredPos);
     if (tile.type === TileType.Wall) {
-      //console.log("Checking if wall at " + desiredPos.x + "," + desiredPos.y + " can be pushed");
       if (!this.tryPush(tile, direction, map)) {
-        //console.log("Unable to move to obstructed position " + desiredPos.x + "," + desiredPos.y);
         return;
       }
 
-      //console.log("Pushed tile at " + desiredPos.x + "," + desiredPos.y);
     }
 
-    //console.log("Able to move to " + desiredPos.x + "," + desiredPos.y);
     this.move(direction, map);
   }
 
@@ -62,7 +66,6 @@ class Player extends PIXI.Container {
         return false;
       }
 
-      //console.log("Checking to push " + tile.getDebugString());
       if (tile.type === TileType.Floor) {
         validPush = true;
         break;

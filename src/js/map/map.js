@@ -9,7 +9,8 @@ class Map extends PIXI.Container {
   constructor(width, height, wall_ratio, resources) {
     super();
 
-    this.tiles = [];
+    this.resources = resources;
+
     this.grid = { width, height };
     this.dimensions = { width:width*GRID_SCALE, height:height*GRID_SCALE };
     this.wall_ratio = wall_ratio === undefined || Number.isNaN(wall_ratio) ?
@@ -26,21 +27,38 @@ class Map extends PIXI.Container {
     this.addChild(this.gridContainer);
 
     let coordinate, id, newTile, gridPos;
+    this.tiles = [];
+
     for (let x = 0; x < this.grid.width; x++) {
       this.tiles[x] = [];
 
       for (let y = 0; y < this.grid.height; y++) {
         coordinate = new Coordinate(x, y);
         id = this.getCoordinateId(coordinate);
-        newTile = new Tile(coordinate, this.getRandomTileType(), id,
-          GRID_SCALE, resources);
-        gridPos = this.getGridPositionFromCoordinates(coordinate);
-        //console.log("Tile " + newTile.id + " map grid position is " + gridPos.x + "," + gridPos.y);
-        newTile.position.set(gridPos.x, gridPos.y);
+        newTile = new Tile(coordinate, TileType.None, id, GRID_SCALE, this.resources);
         this.tiles[x][y] = newTile;
+
+        gridPos = this.getGridPositionFromCoordinates(coordinate);
+        newTile.position.set(gridPos.x, gridPos.y);
         this.gridContainer.addChild(newTile);
       }
     }
+  }
+
+  generate() {
+    for (let x = 0; x < this.grid.width; x++) {
+      for (let y = 0; y < this.grid.height; y++) {
+        this.tiles[x][y].setType(this.getRandomTileType());
+      }
+    }
+  }
+
+  clear() {
+    for (let x = 0; x < this.grid.width; x++) {
+      for (let y = 0; y < this.grid.height; y++) {
+          this.tiles[x][y].setType(TileType.None);
+        }
+      }
   }
 
   isCoordinateOutOfBounds(coordinate) {

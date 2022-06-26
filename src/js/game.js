@@ -24,8 +24,6 @@ class Game {
   onWindowResize() {
     const canvasWidth = window.innerWidth - 20;
     const canvasHeight = window.innerHeight - 20;
-    //console.log("Window resized to " + window.innerWidth + "x" + window.innerHeight +
-    //  ", canvas dimensions: " + canvasWidth + "x" + canvasHeight);
 
     // Resize canvas to match given dimensions
     this.application.renderer.view.style.width = canvasWidth;

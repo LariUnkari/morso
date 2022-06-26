@@ -1,5 +1,8 @@
 import { GameView } from "./gameView.js";
 
+const STYLE_BUTTON_START = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
+const STYLE_BUTTON_QUIT = { fontFamily:"Arial", fontSize:32, fill:0xFF0000 };
+
 class MainView extends PIXI.Container {
   constructor(resources) {
     super();
@@ -19,7 +22,30 @@ class MainView extends PIXI.Container {
     this.gameView = new GameView(resources);
     this.gameView.position.set(4, 4);
 
-    this.addChild(this.frame, this.gameView);
+    this.startButton = new PIXI.Text("START", STYLE_BUTTON_START);
+    this.startButton.interactive = true;
+    this.startButton.buttonMode = true;
+    this.startButton.on("click", this.onClickStart.bind(this));
+
+    this.quitButton = new PIXI.Text("QUIT", STYLE_BUTTON_QUIT);
+    this.quitButton.interactive = true;
+    this.quitButton.buttonMode = true;
+    this.quitButton.on("click", this.onClickQuit.bind(this));
+    this.quitButton.visible = false;
+
+    this.addChild(this.frame, this.gameView, this.startButton, this.quitButton);
+  }
+
+  onClickStart() {
+    this.gameView.startGame();
+    this.startButton.visible = false;
+    this.quitButton.visible = true;
+  }
+
+  onClickQuit() {
+    this.gameView.quitGame();
+    this.quitButton.visible = false;
+    this.startButton.visible = true;
   }
 
   resizeView(canvasWidth, canvasHeight) {
@@ -43,10 +69,13 @@ class MainView extends PIXI.Container {
     this.x = Math.floor((scaledWidth -
       (this.gameView.map.dimensions.width + 8)) / 2);
 
-    //console.log("Map dimensions: " + this.gameView.map.dimensions.width + "x" +
-    //  this.gameView.map.dimensions.height + ", ratio to fit: " + ratio +
-    //  ", resulting gameView dimensions: " + scaledWidth + "x" + scaledHeight +
-    //  ", view x offset: " + this.x);
+    this.startButton.position.set(
+      Math.floor((actualWidth - this.startButton.width) / 2), actualHeight +
+      Math.floor((canvasHeight - actualHeight - STYLE_BUTTON_START.fontSize) / 2) + 4);
+    this.quitButton.position.set(
+      actualWidth - this.quitButton.width, actualHeight +
+      Math.floor((canvasHeight - actualHeight - STYLE_BUTTON_QUIT.fontSize) / 2) + 4);
+
   }
 }
 
