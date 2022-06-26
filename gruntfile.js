@@ -13,12 +13,11 @@ module.exports = function(grunt) {
     copy: {
       main: {
         files: [
+          { expand:false, src:'src/index.html', dest:'build/index.html' },
           { expand:true, cwd:'src/js', src:['**'], dest:'build/js' },
           { expand:true, cwd:'src/assets/exported', src:['**'], dest:'build/assets' },
-          { expand:false, src:[
-            'node_modules/pixi.js/browser/pixi.js',
-            'node_modules/pixi.js/browser/pixi.js.map'
-          ], dest:'build/lib/' }
+          { expand:true, cwd:'node_modules/pixi.js/dist/browser', src:[
+            'pixi.js', 'pixi.js.map' ], dest:'build/lib' },
         ]
       }
     }
