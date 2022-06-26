@@ -30,6 +30,34 @@ class Entity extends PIXI.Container {
       GameData.map.getGridPositionFromCoordinatesWithOffset(coordinate));
   }
 
+  checkVisibilityTo(direction, toCoordinate) {
+    // Neighbouring tile is always visible
+    let dist = this.coordinate.getManhattanDistanceTo(toCoordinate);
+    if (dist === 1) { return true; }
+
+    // Check if too far off direct grid line (adjacent is ok)
+    const diff = toCoordinate.minus(this.coordinate);
+    if ((direction.x !== 0 && Math.abs(diff.y) > 1) ||
+        (direction.y !== 0 && Math.abs(diff.x) > 1)) {
+      return false;
+    }
+
+    // Check along the direction line if visible tiles continue adjacent to target
+    let nextCoordinate = this.coordinate.plus(direction);
+    let tile = GameData.map.getTileAtCoordinates(nextCoordinate);
+    while (tile !== null && tile.type === TileType.Floor) {
+      if (dist <= 1) {
+        return true;
+      }
+
+      dist--;
+      nextCoordinate = nextCoordinate.plus(direction);
+      tile = GameData.map.getTileAtCoordinates(nextCoordinate);
+    }
+
+    return false;
+  }
+
   move(direction) {
     this.setCoordinate(this.coordinate.plus(direction));
   }

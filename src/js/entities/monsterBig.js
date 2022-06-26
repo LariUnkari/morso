@@ -24,7 +24,14 @@ class MonsterBig extends Enemy {
 
     let desiredDirection = this.getPlayerBestDirection();
     let targetCoordinate = this.coordinate.plus(desiredDirection);
-    
+
+    if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
+      if (!this.tryMove(desiredDirection)) {
+        console.warn(this.name + ": Unable to move to visible direction to " + targetCoordinate.toString());
+      }
+      return;
+    }
+
     if (this.checkWasStuckAt(targetCoordinate)) {
       desiredDirection = null;
     } else {

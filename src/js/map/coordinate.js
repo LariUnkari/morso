@@ -19,6 +19,11 @@ class Coordinate {
     return new Coordinate(this.x - coordinate.x, this.y - coordinate.y);
   }
 
+  getManhattanDistanceTo(toCoordinate) {
+    const diff = this.minus(toCoordinate);
+    return Math.abs(diff.x) + Math.abs(diff.y);
+  }
+
   equals(coordinate) {
     return coordinate !== undefined && coordinate !== null &&
       this.x === coordinate.x && this.y === coordinate.y;
