@@ -20,7 +20,7 @@ const main = () => {
   document.body.appendChild(app.view);
 
   // load the textures we need
-  app.loader.add("player", "assets/player.png")
+  app.loader.add("entity_player", "assets/entity_player.png")
             .add("tile_void", "assets/tile_floor.png")
             .add("tile_floor", "assets/tile_floor.png")
             .add("tile_wall", "assets/tile_wall.png");

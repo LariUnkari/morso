@@ -6,12 +6,12 @@ class Player extends PIXI.Container {
     super();
 
     this.resources = resources;
-    this.sprite = new PIXI.Sprite(resources.player.texture);
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
 
     this.isEnabled = false;
     this.coordinate = new Coordinate(0, 0);
+    this.sprite = new PIXI.Sprite(resources.entity_player.texture);
   }
 
   enable() {

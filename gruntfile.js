@@ -10,7 +10,8 @@ module.exports = function(grunt) {
     copy: {
       main: {
         files: [
-          { expand:true, cwd:'src', src:['**'], dest:'build/' },
+          { expand:true, cwd:'src/js', src:['**'], dest:'build/js' },
+          { expand:true, cwd:'src/assets/exported', src:['**'], dest:'build/assets' },
           { expand:false, src:[
             'node_modules/pixi.js/browser/pixi.js',
             'node_modules/pixi.js/browser/pixi.js.map'
