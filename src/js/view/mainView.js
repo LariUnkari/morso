@@ -51,9 +51,9 @@ class MainView extends PIXI.Container {
 
   resizeView(canvasWidth, canvasHeight) {
     // Scale game view to fit desired view dimensions based on map
-    const ratio = Math.min(
+    const ratio = Math.max(0.5, Math.min(
       (canvasWidth - 8) / GameData.map.dimensions.width,
-      (canvasHeight - 8) / (GameData.map.dimensions.height + 80));
+      (canvasHeight - 8) / (GameData.map.dimensions.height + 80)));
     this.gameView.scale.set(ratio);
 
     // Scale frame to fit around map view
@@ -70,11 +70,11 @@ class MainView extends PIXI.Container {
     this.x = Math.floor((scaledWidth - (GameData.map.dimensions.width + 8)) / 2);
 
     this.startButton.position.set(
-      Math.floor((actualWidth - this.startButton.width) / 2), actualHeight +
-      Math.floor((canvasHeight - actualHeight - STYLE_BUTTON_START.fontSize) / 2) + 4);
+      Math.floor((actualWidth - this.startButton.width) / 2),
+      actualHeight + 20 + 4);
     this.quitButton.position.set(
-      actualWidth - this.quitButton.width, actualHeight +
-      Math.floor((canvasHeight - actualHeight - STYLE_BUTTON_QUIT.fontSize) / 2) + 4);
+      actualWidth - this.quitButton.width,
+      actualHeight + 20 + 4);
 
   }
 
