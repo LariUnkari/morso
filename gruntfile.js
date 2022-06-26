@@ -1,6 +1,9 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
+    clean: {
+      contents: ['build/']
+    },
     jshint: {
       options: {
         esversion:6
@@ -21,9 +24,10 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
-  grunt.registerTask('default', ['jshint', 'copy']);
+  grunt.registerTask('default', ['clean', 'jshint', 'copy']);
 
 };
