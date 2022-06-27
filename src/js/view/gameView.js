@@ -6,7 +6,7 @@ import { Direction } from "../map/direction.js";
 import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
-import { MonsterBig } from "../entities/monsterBig.js";
+import { Monster } from "../entities/monster.js";
 import { EntityType } from "../entities/entityType.js";
 import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
@@ -44,11 +44,16 @@ class GameView extends PIXI.Container {
     GameData.player.revive();
     GameData.player.enable();
 
-    let monster, x, y;
+    let monster, type, spriteName, moveInterval, killScore, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
-      monster = new MonsterBig("MonsterBig" + (i + 1), EntityType.Enemy, "entity_monster_big",
-        { canMove:true, moveInterval:800, killScore:100 });
+      type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
+      spriteName = i === 0 ? "entity_monster_small" : "entity_monster_big";
+      moveInterval = i === 0 ? 500 : 1000;
+      killScore = i === 0 ? 150 : 100;
+
+      monster = new Monster("Monster" + (i + 1), type, spriteName,
+        { canMove:true, moveInterval, killScore, stuckMemoryDuration:7 });
       GameData.enemies[i] = monster;
       this.addChild(monster);
 

@@ -2,10 +2,12 @@ import GameData from "../gameData.js";
 import { Enemy } from "./enemy.js";
 import { Direction, GridDirections } from "../map/direction.js";
 
-class MonsterBig extends Enemy {
+class Monster extends Enemy {
   constructor(name, type, spriteName, options) {
     super(name, type, spriteName, options);
 
+    this.stuckMemoryDuration =
+      Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
     this.stuckMemoryCount = 0;
     this.stuckCoordinates = {};
   }
@@ -93,7 +95,7 @@ class MonsterBig extends Enemy {
     for (let id of Object.keys(this.stuckCoordinates)) {
       timePassed = GameData.tickTime - this.stuckCoordinates[id].time;
 
-      if (timePassed >= this.moveInterval * 7) {
+      if (timePassed >= this.moveInterval * this.stuckMemoryDuration) {
         forgetList.push(id);
       }
     }
@@ -106,4 +108,4 @@ class MonsterBig extends Enemy {
   }
 }
 
-export { MonsterBig };
+export { Monster };
