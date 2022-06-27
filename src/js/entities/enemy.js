@@ -1,6 +1,4 @@
 import GameData from "../gameData.js";
-import GameEventHandler from "../gameEventHandler.js";
-import { GameEvent } from "../gameEvent.js";
 import { Entity } from "./entity.js";
 
 class Enemy extends Entity {
@@ -34,7 +32,6 @@ class Enemy extends Entity {
 
     if (GameData.player.isAlive && this.coordinate.equals(GameData.player.coordinate)) {
       GameData.player.kill();
-      GameEventHandler.emit(GameEvent.PLAYER_DIED, this);
     }
   }
 
