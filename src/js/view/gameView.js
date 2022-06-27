@@ -58,6 +58,7 @@ class GameView extends PIXI.Container {
       startTile = FillSearch.findNearestTileOfType(GameData.map,
         new Coordinate(x, y), TileType.Floor);
       monster.setCoordinate(startTile.coordinate);
+      monster.enable();
 
       GameData.isGameOn = true;
     }

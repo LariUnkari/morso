@@ -20,7 +20,7 @@ class Enemy extends Entity {
   onUpdate(deltaTime) {
     super.onUpdate(deltaTime);
 
-    if (this.canMove) {
+    if (this.canMove === true && this.isEnabled === true) {
       if (GameData.tickTime >= this.nextMoveTime) {
         this.nextMoveTime += this.moveInterval;
         this.onMoveTime();

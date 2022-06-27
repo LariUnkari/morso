@@ -22,7 +22,7 @@ class Player extends Entity {
   onMoved() {
     if (this.isAlive) {
       for (let enemy of GameData.enemies) {
-        if (this.coordinate.equals(enemy.coordinate)) {
+        if (enemy.isAlive && this.coordinate.equals(enemy.coordinate)) {
           this.kill();
           break;
         }
