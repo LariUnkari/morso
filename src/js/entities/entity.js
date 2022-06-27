@@ -138,7 +138,7 @@ class Entity extends PIXI.Container {
 
         if (result.entity !== null) {
           result.isValid =
-            ((result.entity.type >> (EntityType.Enemy - 1)) & 1) === 1;
+            ((result.entity.type >> EntityType.Enemy) & 1) === 1;
         } else {
           result.isValid = true;
         }
