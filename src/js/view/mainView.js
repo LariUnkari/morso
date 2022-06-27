@@ -135,7 +135,7 @@ class MainView extends PIXI.Container {
       Math.floor((actualWidth - this.startButton.width) / 2),
       actualHeight + 20 + 4);
     this.quitButton.position.set(
-      actualWidth - this.quitButton.width, actualHeight + 20 + 4);
+      actualWidth - this.quitButton.width - 12 - 4, actualHeight + 20 + 4);
     this.gameScore.position.set(20, actualHeight + 20 + 4);
     this.gameResult.position.set(
       Math.floor(actualWidth / 2),
