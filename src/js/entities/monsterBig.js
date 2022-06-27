@@ -3,8 +3,8 @@ import { Enemy } from "./enemy.js";
 import { Direction, GridDirections } from "../map/direction.js";
 
 class MonsterBig extends Enemy {
-  constructor(name, spriteName, options) {
-    super(name, spriteName, options);
+  constructor(name, type, spriteName, options) {
+    super(name, type, spriteName, options);
 
     this.stuckMemoryCount = 0;
     this.stuckCoordinates = {};

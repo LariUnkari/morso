@@ -2,14 +2,18 @@ import GameData from "../gameData.js";
 import { Entity } from "./entity.js";
 
 class Enemy extends Entity {
-  constructor(name, spriteName, options) {
-    super(name, spriteName, options);
+  constructor(name, type, spriteName, options) {
+    super(name, type, spriteName, options);
 
     this.canMove = options.canMove === true;
     this.moveInterval = Number.isNaN(options.moveInterval) ? 1000 : options.moveInterval;
     this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
 
     this.nextMoveTime = this.moveInterval;
+  }
+
+  kill() {
+    super.kill();
   }
 
   // Called each frame with delta time in milliseconds

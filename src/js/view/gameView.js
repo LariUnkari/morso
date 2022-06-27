@@ -7,6 +7,7 @@ import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
 import { MonsterBig } from "../entities/monsterBig.js";
+import { EntityType } from "../entities/entityType.js";
 import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
 
@@ -14,7 +15,8 @@ class GameView extends PIXI.Container {
   constructor() {
     super();
 
-    GameData.player = new Player("Player", "entity_player", { canPush:true });
+    GameData.player = new Player("Player", EntityType.Player, "entity_player",
+      { canPush:true });
     GameData.player.visible = false;
     GameData.map = new Map(40, 21, undefined);
     this.addChild(GameData.map, GameData.player);
@@ -45,7 +47,7 @@ class GameView extends PIXI.Container {
     let monster, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
-      monster = new MonsterBig("MonsterBig" + (i + 1), "entity_monster_big",
+      monster = new MonsterBig("MonsterBig" + (i + 1), EntityType.Enemy, "entity_monster_big",
         { canMove:true, moveInterval:800, killScore:100 });
       GameData.enemies[i] = monster;
       this.addChild(monster);

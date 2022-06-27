@@ -1,12 +1,14 @@
 import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
 import { TileType } from "../map/tileType.js";
+import { EntityType } from "../entities/entityType.js";
 
 class Entity extends PIXI.Container {
-  constructor(name, spriteName, options) {
+  constructor(name, type, spriteName, options) {
     super();
 
     this.name = name;
+    this.type = type;
     this.sprite = new PIXI.Sprite(PIXI.Texture.from(spriteName));
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
@@ -27,11 +29,13 @@ class Entity extends PIXI.Container {
 
   kill() {
     this.isAlive = false;
+    this.sprite.tint = 0x333333;
     this.disable();
   }
 
   revive() {
     this.isAlive = true;
+    this.sprite.tint = 0xFFFFFF;
   }
 
   setCoordinate(coordinate) {
@@ -112,7 +116,7 @@ class Entity extends PIXI.Container {
     }
 
     let tile;
-    const result = { isValid:false, target:null };
+    const result = { isValid:false, tile:null, entity:null };
     const coordinate = fromTile.coordinate.plus(direction);
 
     while (!GameData.map.isCoordinateOutOfBounds(coordinate)) {
@@ -124,8 +128,20 @@ class Entity extends PIXI.Container {
       }
 
       if (tile.type === TileType.Floor) {
-        result.isValid = true;
         result.target = tile;
+
+        for (let entity of GameData.getAllEntities()) {
+          if (entity.coordinate.equals(coordinate)) {
+            result.entity = entity;
+          }
+        }
+
+        if (result.entity !== null) {
+          result.isValid = (result.entity.type >> (EntityType.Enemy - 1)) & 1 === 1;
+        } else {
+          result.isValid = true;
+        }
+
         break;
       }
 
@@ -138,9 +154,13 @@ class Entity extends PIXI.Container {
   tryPush(fromTile, direction) {
     const push = this.checkPush(fromTile, direction);
 
-    if (push.isValid) {
+    if (push.isValid === true) {
       push.target.setType(TileType.Wall);
       fromTile.setType(TileType.Floor);
+
+      if (push.entity !== null) {
+        push.entity.kill();
+      }
     }
 
     return push.isValid;
