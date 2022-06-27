@@ -57,12 +57,17 @@ class MonsterBig extends Enemy {
     if (validDirs <= 1) {
       this.stuckCoordinates[GameData.map.getCoordinateId(this.coordinate)] = { coordinate:this.coordinate, time:GameData.tickTime };
       this.stuckMemoryCount = Object.keys(this.stuckCoordinates).length;
-      if (directions.length > 0) { this.move(directions[0]); }
+    }
+
+    if (directions.length === 0) { return; }
+
+    if (directions.length === 1) {
+      this.move(directions[0]);
       return;
     }
 
-    const dir = directions[Math.floor(directions.length * Math.random())];
-    this.move(dir);
+    const dirIndex = Math.floor(directions.length * Math.random());
+    this.move(directions[dirIndex]);
   }
 
   getPlayerBestDirection() {
