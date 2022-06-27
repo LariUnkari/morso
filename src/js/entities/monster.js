@@ -1,15 +1,42 @@
 import GameData from "../gameData.js";
 import { Enemy } from "./enemy.js";
+import { EntityType } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
 
 class Monster extends Enemy {
   constructor(name, type, spriteName, options) {
     super(name, type, spriteName, options);
 
+    if (this.type === EntityType.MonsterSmall) {
+      this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;
+      this.growthTime = this.growthInterval;
+    }
+    if (this.type === EntityType.MonsterBig) {
+      this.eggInterval = Number.isNaN(options.eggTime) ? 40000 : options.eggTime;
+      this.eggTime = this.eggInterval;
+    }
+
     this.stuckMemoryDuration =
       Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
     this.stuckMemoryCount = 0;
     this.stuckCoordinates = {};
+  }
+
+  onUpdate(deltaTime) {
+    super.onUpdate(deltaTime);
+
+    if (this.type === EntityType.MonsterSmall) {
+      if (GameData.tickTime >= this.growthTime) {
+        console.log(this.name + ": Growing big, IF I ONLY KNEW HOW");
+        this.growthTime += this.growthInterval;
+      }
+    }
+    if (this.type === EntityType.MonsterBig) {
+      if (GameData.tickTime >= this.eggTime) {
+        console.log(this.name + ": Laying an egg, IF I ONLY KNEW HOW");
+        this.eggTime += this.eggInterval;
+      }
+    }
   }
 
   onMoveTime() {

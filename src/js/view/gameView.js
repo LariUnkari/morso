@@ -44,16 +44,21 @@ class GameView extends PIXI.Container {
     GameData.player.revive();
     GameData.player.enable();
 
-    let monster, type, spriteName, moveInterval, killScore, x, y;
+    let monster, type, spriteName, moveInterval, growthTime, eggTime, killScore, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
       type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
       spriteName = i === 0 ? "entity_monster_small" : "entity_monster_big";
       moveInterval = i === 0 ? 500 : 1000;
+      growthTime = i === 0 ? 30000 : undefined;
+      eggTime = i === 0 ? undefined : 40000;
       killScore = i === 0 ? 150 : 100;
 
       monster = new Monster("Monster" + (i + 1), type, spriteName,
-        { canMove:true, moveInterval, killScore, stuckMemoryDuration:7 });
+        {
+           moveInterval, growthTime, eggTime, killScore,
+           canMove:true, stuckMemoryDuration:7
+        });
       GameData.enemies[i] = monster;
       this.addChild(monster);
 
