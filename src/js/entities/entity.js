@@ -128,7 +128,7 @@ class Entity extends PIXI.Container {
       }
 
       if (tile.type === TileType.Floor) {
-        result.target = tile;
+        result.tile = tile;
 
         for (let entity of GameData.getAllEntities()) {
           if (entity.coordinate.equals(coordinate)) {
@@ -137,7 +137,8 @@ class Entity extends PIXI.Container {
         }
 
         if (result.entity !== null) {
-          result.isValid = (result.entity.type >> (EntityType.Enemy - 1)) & 1 === 1;
+          result.isValid =
+            ((result.entity.type >> (EntityType.Enemy - 1)) & 1) === 1;
         } else {
           result.isValid = true;
         }
@@ -155,7 +156,7 @@ class Entity extends PIXI.Container {
     const push = this.checkPush(fromTile, direction);
 
     if (push.isValid === true) {
-      push.target.setType(TileType.Wall);
+      push.tile.setType(TileType.Wall);
       fromTile.setType(TileType.Floor);
 
       if (push.entity !== null) {
