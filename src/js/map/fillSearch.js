@@ -1,4 +1,4 @@
-import { Direction, CardinalDirections } from "./direction.js";
+import { Direction, GridDirections } from "./direction.js";
 
 var findNearestTileOfType = (map, coordinate, type) => {
 
@@ -18,7 +18,7 @@ var findNearestTileOfTypeStepper = (map, coordinate, type, closed, result) => {
   closed[result.tile.id] = result.tile;
 
   let nextCoordinate;
-  for (let direction of CardinalDirections) {
+  for (let direction of GridDirections) {
     nextCoordinate = coordinate.plus(direction);
 
     if (map.isCoordinateOutOfBounds(nextCoordinate)) { continue; }

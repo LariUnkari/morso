@@ -1,6 +1,6 @@
 import GameData from "../gameData.js";
 import { Enemy } from "./enemy.js";
-import { Direction, CardinalDirections } from "../map/direction.js";
+import { Direction, GridDirections } from "../map/direction.js";
 
 class MonsterBig extends Enemy {
   constructor(name, spriteName, options) {
@@ -43,7 +43,7 @@ class MonsterBig extends Enemy {
     const directions = [];
     let validDirs = 0;
 
-    for (let dir of CardinalDirections) {
+    for (let dir of GridDirections) {
       if (dir.equals(desiredDirection)) { continue; } // Was already unable to move there
       targetCoordinate = this.coordinate.plus(dir);
 

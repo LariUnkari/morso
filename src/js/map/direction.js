@@ -7,8 +7,8 @@ const Direction = {
   Down:new Coordinate(0, 1)
 };
 
-const CardinalDirections = [
+const GridDirections = [
   Direction.Left, Direction.Up, Direction.Right, Direction.Down
 ];
 
-export { Direction, CardinalDirections };
+export { Direction, GridDirections };

@@ -2,7 +2,7 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "../map/coordinate.js";
-import { Direction, CardinalDirections } from "../map/direction.js";
+import { Direction, GridDirections } from "../map/direction.js";
 import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
