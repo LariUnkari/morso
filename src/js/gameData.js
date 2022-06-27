@@ -8,6 +8,10 @@ class GameData {
     this.gameTime = 0;
     this.tickTime = 0;
   }
+
+  getAllEntities() {
+    return this.enemies.concat(this.player);
+  }
 }
 
 export default (new GameData());
