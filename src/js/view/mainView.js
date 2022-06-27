@@ -1,8 +1,12 @@
 import GameData from "../gameData.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { GameView } from "./gameView.js";
 
 const STYLE_BUTTON_START = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
 const STYLE_BUTTON_QUIT = { fontFamily:"Arial", fontSize:32, fill:0xFF0000 };
+const STYLE_TEXT_RESULT_TITLE = { fontFamily:"Arial", fontSize:96, fill:0xFFFFFF };
+const STYLE_TEXT_RESULT_DESCRIPTION = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
 
 class MainView extends PIXI.Container {
   constructor(resources) {
@@ -34,7 +38,30 @@ class MainView extends PIXI.Container {
     this.quitButton.on("click", this.onClickQuit.bind(this));
     this.quitButton.visible = false;
 
-    this.addChild(this.frame, this.gameView, this.startButton, this.quitButton);
+    this.gameResult = new PIXI.Container();
+    this.gameResultShadow = new PIXI.Sprite(PIXI.Texture.from("blob"));
+    this.gameResultShadow.anchor.set(0.5);
+    this.gameResultShadow.tint = 0x000000;
+    this.gameResultTitle = new PIXI.Text("YOU ARE DEAD", STYLE_TEXT_RESULT_TITLE);
+    this.gameResultDescription =
+      new PIXI.Text("YOU WERE EATEN BY A MORSO", STYLE_TEXT_RESULT_DESCRIPTION);
+
+    this.gameResultTitle.position.set(
+      -Math.floor(this.gameResultTitle.width / 2),
+      -Math.floor(this.gameResultTitle.height / 2));
+    this.gameResultDescription.position.set(
+      -Math.floor(this.gameResultDescription.width / 2),
+      this.gameResultTitle.y + this.gameResultTitle.height);
+
+    this.gameResult.addChild(this.gameResultShadow, this.gameResultTitle,
+      this.gameResultDescription);
+    this.gameResult.visible = false;
+
+    this.addChild(this.frame, this.gameView, this.startButton, this.quitButton,
+      this.gameResult);
+
+    GameEventHandler.on(GameEvent.PLAYER_DIED, this.onPlayerDied.bind(this));
+    GameEventHandler.on(GameEvent.GAME_ENDED, this.onGameEnded.bind(this));
   }
 
   onClickStart() {
@@ -47,6 +74,17 @@ class MainView extends PIXI.Container {
     this.gameView.quitGame();
     this.quitButton.visible = false;
     this.startButton.visible = true;
+  }
+
+  onPlayerDied(instigator) {
+    console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
+    this.gameResult.visible = true;
+    this.gameResultTitle.tint = 0xFF0000;
+    this.gameResultDescription.tint = 0xFF0000;
+  }
+
+  onGameEnded() {
+    this.gameResult.visible = false;
   }
 
   resizeView(canvasWidth, canvasHeight) {
@@ -75,7 +113,9 @@ class MainView extends PIXI.Container {
     this.quitButton.position.set(
       actualWidth - this.quitButton.width,
       actualHeight + 20 + 4);
-
+    this.gameResult.position.set(
+      Math.floor(actualWidth / 2),
+      Math.floor(actualHeight / 2) + 4);
   }
 
   // Called each frame with delta time in milliseconds

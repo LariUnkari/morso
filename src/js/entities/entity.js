@@ -12,6 +12,7 @@ class Entity extends PIXI.Container {
     this.addChild(this.sprite);
 
     this.canPush = options.canPush === true;
+    this.isAlive = true;
     this.isEnabled = false;
     this.coordinate = new Coordinate(0, 0);
   }
@@ -22,6 +23,15 @@ class Entity extends PIXI.Container {
 
   disable() {
     this.isEnabled = false;
+  }
+
+  kill() {
+    this.isAlive = false;
+    this.disable();
+  }
+
+  revive() {
+    this.isAlive = true;
   }
 
   setCoordinate(coordinate) {
@@ -60,6 +70,11 @@ class Entity extends PIXI.Container {
 
   move(direction) {
     this.setCoordinate(this.coordinate.plus(direction));
+    this.onMoved();
+  }
+
+  onMoved() {
+    // Do nothing, extending classes will add behaviour
   }
 
   checkMove(direction) {

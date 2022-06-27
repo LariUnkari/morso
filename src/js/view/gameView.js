@@ -1,4 +1,6 @@
 import GameData from "../gameData.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "../map/coordinate.js";
 import { Direction, CardinalDirections } from "../map/direction.js";
 import { Map } from "../map/map.js";
@@ -37,6 +39,7 @@ class GameView extends PIXI.Container {
 
     GameData.player.setCoordinate(startTile.coordinate);
     GameData.player.visible = true;
+    GameData.player.revive();
     GameData.player.enable();
 
     let monster, x, y;
@@ -68,6 +71,8 @@ class GameView extends PIXI.Container {
     GameData.enemies = [];
     GameData.gameTime = 0;
     GameData.tickTime = 0;
+
+    GameEventHandler.emit(GameEvent.GAME_ENDED);
   }
 
   // Called each frame with delta time in milliseconds

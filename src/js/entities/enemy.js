@@ -1,4 +1,6 @@
 import GameData from "../gameData.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { Entity } from "./entity.js";
 
 class Enemy extends Entity {
@@ -21,6 +23,18 @@ class Enemy extends Entity {
         this.nextMoveTime += this.moveInterval;
         this.onMoveTime();
       }
+    }
+  }
+
+  onMoved() {
+    if (GameData.player === null) {
+      console.warn(this.name + ": Player not found!");
+      return;
+    }
+
+    if (GameData.player.isAlive && this.coordinate.equals(GameData.player.coordinate)) {
+      GameData.player.kill();
+      GameEventHandler.emit(GameEvent.PLAYER_DIED, this);
     }
   }
 
