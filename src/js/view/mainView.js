@@ -42,9 +42,8 @@ class MainView extends PIXI.Container {
     this.gameResultShadow = new PIXI.Sprite(PIXI.Texture.from("blob"));
     this.gameResultShadow.anchor.set(0.5);
     this.gameResultShadow.tint = 0x000000;
-    this.gameResultTitle = new PIXI.Text("YOU ARE DEAD", STYLE_TEXT_RESULT_TITLE);
-    this.gameResultDescription =
-      new PIXI.Text("YOU WERE EATEN BY A MORSO", STYLE_TEXT_RESULT_DESCRIPTION);
+    this.gameResultTitle = new PIXI.Text("TITLE", STYLE_TEXT_RESULT_TITLE);
+    this.gameResultDescription = new PIXI.Text("DESCRIPTION", STYLE_TEXT_RESULT_DESCRIPTION);
 
     this.gameResultTitle.position.set(
       -Math.floor(this.gameResultTitle.width / 2),
@@ -61,6 +60,7 @@ class MainView extends PIXI.Container {
       this.gameResult);
 
     GameEventHandler.on(GameEvent.PLAYER_DIED, this.onPlayerDied.bind(this));
+    GameEventHandler.on(GameEvent.ENEMY_DIED, this.onEnemyDied.bind(this));
     GameEventHandler.on(GameEvent.GAME_ENDED, this.onGameEnded.bind(this));
   }
 
@@ -78,13 +78,32 @@ class MainView extends PIXI.Container {
 
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
-    this.gameResult.visible = true;
-    this.gameResultTitle.tint = 0xFF0000;
-    this.gameResultDescription.tint = 0xFF0000;
+    this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");
+  }
+
+  onEnemyDied(deadEnemy) {
+    for (let enemy of GameData.enemies) {
+      if (enemy.isAlive === true) { return; }
+    }
+
+    GameData.player.disable();
+    this.showGameResult(true, "VICTORY", "YOU SURVIVED ALL OF THE MORSO");
   }
 
   onGameEnded() {
     this.gameResult.visible = false;
+  }
+
+  showGameResult(isWin, title, description) {
+    this.gameResultTitle.text = title;
+    this.gameResultTitle.x = -Math.floor(this.gameResultTitle.width / 2);
+    this.gameResultDescription.text = description;
+    this.gameResultDescription.x = -Math.floor(this.gameResultDescription.width / 2);
+
+    this.gameResultTitle.tint = isWin ? 0x00FF00 : 0xFF0000;
+    this.gameResultDescription.tint = isWin ? 0x00FF00 : 0xFF0000;
+
+    this.gameResult.visible = true;
   }
 
   resizeView(canvasWidth, canvasHeight) {

@@ -1,4 +1,6 @@
 import GameData from "../gameData.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { Entity } from "./entity.js";
 
 class Enemy extends Entity {
@@ -14,6 +16,7 @@ class Enemy extends Entity {
 
   kill() {
     super.kill();
+    GameEventHandler.emit(GameEvent.ENEMY_DIED, this);
   }
 
   // Called each frame with delta time in milliseconds
