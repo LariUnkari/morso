@@ -1,6 +1,7 @@
+import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import { Enemy } from "./enemy.js";
-import { EntityType } from "../entities/entityType.js";
+import { EntityType, EntityIds } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
 
 class Monster extends Enemy {
@@ -8,18 +9,37 @@ class Monster extends Enemy {
     super(name, type, options);
 
     if (this.type === EntityType.MonsterSmall) {
-      this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;
-      this.growthTime = this.growthInterval;
+      this.growthTime = GameData.tickTime + this.growthInterval;
     }
     if (this.type === EntityType.MonsterBig) {
-      this.eggInterval = Number.isNaN(options.eggTime) ? 40000 : options.eggTime;
-      this.eggTime = this.eggInterval;
+      this.eggTime = GameData.tickTime + this.eggInterval;
     }
 
-    this.stuckMemoryDuration =
-      Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
     this.stuckMemoryCount = 0;
     this.stuckCoordinates = {};
+  }
+
+  processOptions(options) {
+    super.processOptions(options);
+
+    this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;
+    this.eggInterval = Number.isNaN(options.eggTime) ? 40000 : options.eggTime;
+    this.stuckMemoryDuration =
+      Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
+  }
+
+  changeType(newType) {
+    if (((newType >> EntityType.Enemy) & 1) !== 1) {
+      console.warn(this.name + ": Can't change from enemy type " + this.type +
+        " '" + EntityIds[this.type] + "' to a non-enemy type " + newType +
+        " '" + EntityIds[newType] + "'!");
+      return;
+    }
+
+    this.type = newType;
+    const options = GameConfiguration.entities[EntityIds[this.type]];
+    this.processOptions(options);
+    this.setSprite(options.spriteName);
   }
 
   onUpdate(deltaTime) {
@@ -27,8 +47,9 @@ class Monster extends Enemy {
 
     if (this.type === EntityType.MonsterSmall) {
       if (GameData.tickTime >= this.growthTime) {
-        console.log(this.name + ": Growing big, IF I ONLY KNEW HOW");
-        this.growthTime += this.growthInterval;
+        this.changeType(EntityType.MonsterBig);
+        this.eggTime = this.growthTime + this.eggInterval;
+        console.log(this.name + ": I grew bigger!");
       }
     }
     if (this.type === EntityType.MonsterBig) {

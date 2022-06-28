@@ -8,4 +8,15 @@ const EntityType = {
   MonsterBig: 4 + 3
 };
 
-export { EntityType };
+const EntityIds = [
+  "None",         // 0
+  "Player",       // 1
+  "Enemies",      // 2
+  "",             // 3
+  "Monsters",     // 4
+  "MonsterEgg",   // 5
+  "MonsterSmall", // 6
+  "MonsterBig"    // 7
+];
+
+export { EntityType, EntityIds };

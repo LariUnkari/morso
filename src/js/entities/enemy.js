@@ -7,11 +7,16 @@ class Enemy extends Entity {
   constructor(name, type, options) {
     super(name, type, options);
 
-    this.canMove = options.canMove === true;
-    this.moveInterval = Number.isNaN(options.moveInterval) ? 1000 : options.moveInterval;
-    this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
+    this.processOptions(options);
 
     this.nextMoveTime = this.moveInterval;
+  }
+
+  processOptions(options) {
+      this.debug = options.debug === true;
+      this.canMove = options.canMove === true;
+      this.moveInterval = Number.isNaN(options.moveInterval) ? 1000 : options.moveInterval;
+      this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
   }
 
   kill() {

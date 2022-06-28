@@ -28,6 +28,12 @@ class Entity extends PIXI.Container {
     this.coordinate = new Coordinate(0, 0);
   }
 
+  setSprite(spriteName) {
+    this.spriteName = spriteName;
+    console.log(this.name + ": Setting sprite to '" + this.spriteName + "'");
+    this.sprite.texture = PIXI.Texture.from(this.spriteName);
+  }
+
   enable() {
     this.isEnabled = true;
   }

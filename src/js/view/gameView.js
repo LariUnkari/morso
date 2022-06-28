@@ -1,3 +1,4 @@
+import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
@@ -7,7 +8,7 @@ import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
 import { Monster } from "../entities/monster.js";
-import { EntityType } from "../entities/entityType.js";
+import { EntityType, EntityIds } from "../entities/entityType.js";
 import { FillSearch } from "../map/fillSearch.js";
 import { InputHandler } from "../input/inputHandler.js";
 
@@ -16,7 +17,7 @@ class GameView extends PIXI.Container {
     super();
 
     GameData.player = new Player("Player", EntityType.Player,
-      { spriteName:"entity_player", canPush:true });
+      GameConfiguration.entities[EntityIds[EntityType.Player]]);
     GameData.player.visible = false;
     GameData.map = new Map(40, 21, undefined);
     this.addChild(GameData.map, GameData.player);
@@ -44,23 +45,15 @@ class GameView extends PIXI.Container {
     GameData.player.revive();
     GameData.player.enable();
 
-    let monster, type, spriteName, moveInterval, growthTime, eggTime, killScore, x, y;
+    let monster, type, options, x, y;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
       type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
-      spriteName = i === 0 ? "entity_monster_small" : "entity_monster_big";
-      moveInterval = i === 0 ? 500 : 1000;
-      growthTime = i === 0 ? 30000 : undefined;
-      eggTime = i === 0 ? undefined : 40000;
-      killScore = i === 0 ? 150 : 100;
+      options = GameConfiguration.entities[EntityIds[type]];
 
-      monster = new Monster("Monster" + (i + 1), type,
-        {
-           spriteName, moveInterval, growthTime, eggTime, killScore,
-           canMove:true, stuckMemoryDuration:7
-        });
-      GameData.enemies[i] = monster;
+      monster = new Monster("Monster" + (i + 1), type, options);
       this.addChild(monster);
+      GameData.enemies[i] = monster;
 
       x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
       y = Math.floor((i + 1) * GameData.map.grid.height / (enemyCount + 1));
