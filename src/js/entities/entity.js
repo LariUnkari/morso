@@ -10,13 +10,8 @@ class Entity extends PIXI.Container {
     this.name = name;
     this.type = type;
     this.spriteName = "placeholder";
-    if (options.spriteName !== undefined) {
-      if (GameData.resources[options.spriteName] === undefined) {
-        console.warn("Unable to find sprite by the name of '" + options.spriteName + "'!");
-      } else {
-        this.spriteName = options.spriteName;
-      }
-    }
+
+    this.processOptions(options);
 
     this.sprite = new PIXI.Sprite(PIXI.Texture.from(this.spriteName));
     this.sprite.anchor.set(0.5);
@@ -28,8 +23,22 @@ class Entity extends PIXI.Container {
     this.coordinate = new Coordinate(0, 0);
   }
 
-  setSprite(spriteName) {
-    this.spriteName = spriteName;
+  processOptions(options) {
+    this.debug = options.debug === true;
+    this.canMove = options.canMove === true;
+    if (options.spriteName !== undefined) { this.setSpriteName(options.spriteName); }
+  }
+
+  setSpriteName(spriteName) {
+      if (GameData.resources[spriteName] === undefined) {
+        console.warn("Unable to find sprite by the name of '" + spriteName + "'!");
+        return;
+      }
+
+      this.spriteName = spriteName;
+  }
+
+  updateSprite() {
     console.log(this.name + ": Setting sprite to '" + this.spriteName + "'");
     this.sprite.texture = PIXI.Texture.from(this.spriteName);
   }
@@ -97,6 +106,8 @@ class Entity extends PIXI.Container {
   }
 
   checkMove(direction) {
+    if (this.canMove !== true) { return false; }
+
     const desiredPos = this.coordinate.plus(direction);
     if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
 
@@ -111,6 +122,8 @@ class Entity extends PIXI.Container {
   }
 
   tryMove(direction) {
+    if (this.canMove !== true) { return false; }
+
     const desiredPos = this.coordinate.plus(direction);
     if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
 
@@ -126,12 +139,12 @@ class Entity extends PIXI.Container {
   }
 
   checkPush(fromTile, direction) {
-    if (direction.x === 0 && direction.y === 0) {
-      return false;
-    }
+    const result = { isValid:false, tile:null, entity:null };
+
+    if (this.canMove !== true) { return result; }
+    if (direction.x === 0 && direction.y === 0) { return result; }
 
     let tile;
-    const result = { isValid:false, tile:null, entity:null };
     const coordinate = fromTile.coordinate.plus(direction);
 
     while (!GameData.map.isCoordinateOutOfBounds(coordinate)) {

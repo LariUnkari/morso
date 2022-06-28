@@ -5,6 +5,7 @@ class GameConfiguration {
     this.entities = {};
     this.entities[EntityIds[EntityType.Player]] = {
       spriteName: "entity_player",
+      canMove:true,
       canPush:true
     };
     this.entities[EntityIds[EntityType.MonsterSmall]] = {

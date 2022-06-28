@@ -39,7 +39,7 @@ class Monster extends Enemy {
     this.type = newType;
     const options = GameConfiguration.entities[EntityIds[this.type]];
     this.processOptions(options);
-    this.setSprite(options.spriteName);
+    this.updateSprite();
   }
 
   onUpdate(deltaTime) {
@@ -52,7 +52,7 @@ class Monster extends Enemy {
         console.log(this.name + ": I grew bigger!");
       }
     }
-    if (this.type === EntityType.MonsterBig) {
+    else if (this.type === EntityType.MonsterBig) {
       if (GameData.tickTime >= this.eggTime) {
         console.log(this.name + ": Laying an egg, IF I ONLY KNEW HOW");
         this.eggTime += this.eggInterval;
