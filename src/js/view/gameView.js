@@ -20,6 +20,7 @@ class GameView extends PIXI.Container {
       GameConfiguration.entities[EntityIds[EntityType.Player]]);
     GameData.player.visible = false;
     GameData.map = new Map(40, 21, undefined);
+    GameData.map.visible = false;
     this.addChild(GameData.map, GameData.player);
 
     this.inputHandler = new InputHandler();
@@ -36,6 +37,7 @@ class GameView extends PIXI.Container {
 
   startGame() {
     GameData.map.generate();
+    GameData.map.visible = true;
 
     let startTile = FillSearch.findNearestTileOfType(GameData.map,
       new Coordinate(5, 10), TileType.Floor);
@@ -69,6 +71,7 @@ class GameView extends PIXI.Container {
 
   quitGame() {
     GameData.map.clear();
+    GameData.map.visible = false;
     GameData.player.disable();
     GameData.player.visible = false;
     for (let i = 0; i < GameData.enemies.length; i++) {
