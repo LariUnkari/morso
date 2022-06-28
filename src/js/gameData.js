@@ -1,5 +1,6 @@
 class GameData {
   constructor() {
+    this.resources = null;
     this.map = null;
     this.player = null;
     this.enemies = [];

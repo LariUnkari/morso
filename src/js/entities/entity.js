@@ -4,12 +4,21 @@ import { TileType } from "../map/tileType.js";
 import { EntityType } from "../entities/entityType.js";
 
 class Entity extends PIXI.Container {
-  constructor(name, type, spriteName, options) {
+  constructor(name, type, options) {
     super();
 
     this.name = name;
     this.type = type;
-    this.sprite = new PIXI.Sprite(PIXI.Texture.from(spriteName));
+    this.spriteName = "placeholder";
+    if (options.spriteName !== undefined) {
+      if (GameData.resources[options.spriteName] === undefined) {
+        console.warn("Unable to find sprite by the name of '" + options.spriteName + "'!");
+      } else {
+        this.spriteName = options.spriteName;
+      }
+    }
+
+    this.sprite = new PIXI.Sprite(PIXI.Texture.from(this.spriteName));
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
 

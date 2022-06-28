@@ -15,8 +15,8 @@ class GameView extends PIXI.Container {
   constructor() {
     super();
 
-    GameData.player = new Player("Player", EntityType.Player, "entity_player",
-      { canPush:true });
+    GameData.player = new Player("Player", EntityType.Player,
+      { spriteName:"entity_player", canPush:true });
     GameData.player.visible = false;
     GameData.map = new Map(40, 21, undefined);
     this.addChild(GameData.map, GameData.player);
@@ -54,9 +54,9 @@ class GameView extends PIXI.Container {
       eggTime = i === 0 ? undefined : 40000;
       killScore = i === 0 ? 150 : 100;
 
-      monster = new Monster("Monster" + (i + 1), type, spriteName,
+      monster = new Monster("Monster" + (i + 1), type,
         {
-           moveInterval, growthTime, eggTime, killScore,
+           spriteName, moveInterval, growthTime, eggTime, killScore,
            canMove:true, stuckMemoryDuration:7
         });
       GameData.enemies[i] = monster;

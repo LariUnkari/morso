@@ -13,7 +13,7 @@ class Game {
   }
 
   start(resources) {
-    this.resources = resources;
+    GameData.resources = resources;
 
     this.mainView = new MainView(resources);
     this.application.stage.addChild(this.mainView);

@@ -4,8 +4,8 @@ import { GameEvent } from "../gameEvent.js";
 import { Entity } from "./entity.js";
 
 class Enemy extends Entity {
-  constructor(name, type, spriteName, options) {
-    super(name, type, spriteName, options);
+  constructor(name, type, options) {
+    super(name, type, options);
 
     this.canMove = options.canMove === true;
     this.moveInterval = Number.isNaN(options.moveInterval) ? 1000 : options.moveInterval;

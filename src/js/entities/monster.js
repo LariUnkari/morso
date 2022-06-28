@@ -4,8 +4,8 @@ import { EntityType } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
 
 class Monster extends Enemy {
-  constructor(name, type, spriteName, options) {
-    super(name, type, spriteName, options);
+  constructor(name, type, options) {
+    super(name, type, options);
 
     if (this.type === EntityType.MonsterSmall) {
       this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;

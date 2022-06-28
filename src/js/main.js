@@ -20,7 +20,8 @@ const main = () => {
   document.body.appendChild(app.view);
 
   // load the textures we need
-  app.loader.add("blob", "assets/blob2by1.png")
+  app.loader.add("placeholder", "assets/placeholder.png")
+            .add("blob", "assets/blob2by1.png")
             .add("entity_player", "assets/entity_player.png")
             .add("entity_monster_big", "assets/entity_monster_big.png")
             .add("entity_monster_small", "assets/entity_monster_small.png")
