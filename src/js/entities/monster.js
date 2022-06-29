@@ -60,11 +60,11 @@ class Monster extends Enemy {
     return true;
   }
 
-  layEgg() {
+  layEgg(coordinate) {
     this.eggsLayed++;
     const options = GameConfiguration.entities[EntityIds[EntityType.MonsterEgg]];
     const egg = new Monster(this.name + "-" + this.eggsLayed, EntityType.MonsterEgg, options);
-    egg.setCoordinate(this.coordinate);
+    egg.setCoordinate(coordinate);
     egg.enable();
     GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, egg);
   }
@@ -88,13 +88,6 @@ class Monster extends Enemy {
         this.changeType(EntityType.MonsterBig);
         this.eggTime = growthTime + MathUtil.getRandomValueInRangeInt(this.eggDuration);
         console.log(this.name + ": I grew bigger!");
-      }
-    }
-    else if (this.type === EntityType.MonsterBig) {
-      if (this.canLayEgg() && GameData.tickTime >= this.eggTime) {
-        this.layEgg();
-        this.eggTime += MathUtil.getRandomValueInRangeInt(this.eggDuration);
-        console.log(this.name + ": I layed an egg! " + this.eggsLayed + "/" + this.eggLimit + " egg limit");
       }
     }
   }
@@ -159,6 +152,19 @@ class Monster extends Enemy {
 
     const dirIndex = Math.floor(directions.length * Math.random());
     this.move(directions[dirIndex]);
+  }
+
+  move(direction) {
+    const leavePosition = this.coordinate;
+    super.move(direction);
+
+    if (this.type === EntityType.MonsterBig) {
+      if (this.canLayEgg() && GameData.tickTime >= this.eggTime) {
+        this.layEgg(leavePosition);
+        this.eggTime += MathUtil.getRandomValueInRangeInt(this.eggDuration);
+        console.log(this.name + ": I layed an egg! " + this.eggsLayed + "/" + this.eggLimit + " egg limit");
+      }
+    }
   }
 
   getPlayerBestDirection() {
