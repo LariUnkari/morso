@@ -67,10 +67,12 @@ class Entity extends PIXI.Container {
   setCoordinate(coordinate) {
     if (this.coordinate.equals(coordinate)) { return; }
 
-    GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
-    this.coordinate = coordinate;
-    GameData.map.setOccupationOfCoordinate(this.coordinate, this);
+    if (this.isAlive) {
+      GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
+      GameData.map.setOccupationOfCoordinate(coordinate, this);
+    }
 
+    this.coordinate = coordinate;
     this.position.copyFrom(
       GameData.map.getGridPositionFromCoordinatesWithOffset(coordinate));
   }
@@ -139,12 +141,18 @@ class Entity extends PIXI.Container {
       } else { return false; }
     }
 
+    if (moveTest.entity) { this.attackEntity(moveTest.entity); }
+
     this.move(direction);
     return true;
   }
 
   canAttackEntity(target) {
     return false;
+  }
+
+  attackEntity(target) {
+    // Do nothing, extending classes will add behaviour
   }
 
   checkPush(fromTile, direction) {

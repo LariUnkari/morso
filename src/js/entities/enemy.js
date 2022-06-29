@@ -27,6 +27,11 @@ class Enemy extends Entity {
     return target.type === EntityType.Player;
   }
 
+  attackEntity(target) {
+    super.attackEntity(target);
+    if (target.isAlive && target.type === EntityType.Player) { target.kill(); }
+  }
+
   // Called each frame with delta time in milliseconds
   onUpdate(deltaTime) {
     super.onUpdate(deltaTime);
@@ -36,17 +41,6 @@ class Enemy extends Entity {
         this.nextMoveTime += this.moveInterval;
         this.onMoveTime();
       }
-    }
-  }
-
-  onMoved() {
-    if (GameData.player === null) {
-      console.warn(this.name + ": Player not found!");
-      return;
-    }
-
-    if (GameData.player.isAlive && this.coordinate.equals(GameData.player.coordinate)) {
-      GameData.player.kill();
     }
   }
 
