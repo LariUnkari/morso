@@ -5,21 +5,11 @@ import { GameEvent } from "../gameEvent.js";
 import { Enemy } from "./enemy.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
+import { MathUtil } from "../utility/mathUtil.js";
 
 class Monster extends Enemy {
   constructor(name, type, options) {
     super(name, type, options);
-
-    if (this.type === EntityType.MonsterEgg) {
-      this.growthTime = GameData.tickTime + this.growthInterval;
-    }
-    if (this.type === EntityType.MonsterSmall) {
-      this.growthTime = GameData.tickTime + this.growthInterval;
-    }
-    if (this.type === EntityType.MonsterBig) {
-      this.eggsLayed = 0;
-      this.eggTime = GameData.tickTime + this.eggInterval;
-    }
 
     this.stuckMemoryCount = 0;
     this.stuckCoordinates = {};
@@ -28,9 +18,20 @@ class Monster extends Enemy {
   processOptions(options) {
     super.processOptions(options);
 
-    this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;
-    this.eggInterval = Number.isNaN(options.eggTime) ? 40000 : options.eggTime;
-    this.eggLimit = Number.isNaN(options.eggLimit) ? 0 : options.eggLimit;
+    this.growthDuration = options.growthDuration;
+    this.growthTime = this.growthDuration === undefined ? undefined :
+      GameData.tickTime + MathUtil.getRandomValueInRangeInt(this.growthDuration);
+
+    this.eggDuration = options.layEggDuration;
+    this.eggTime = this.eggDuration === undefined ? undefined :
+      GameData.tickTime + MathUtil.getRandomValueInRangeInt(this.eggDuration);
+    this.eggLimit = options.layEggLimit;
+    this.eggsLayed = Number.isNaN(this.eggLimit) ? undefined : 0;
+
+    this.incubateDuration = options.incubateDuration;
+    this.hatchTime = this.incubateDuration === undefined ? undefined :
+      GameData.tickTime + MathUtil.getRandomValueInRangeInt(this.incubateDuration);
+
     this.stuckMemoryDuration =
       Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
   }
@@ -49,6 +50,11 @@ class Monster extends Enemy {
     this.updateSprite();
   }
 
+  canLayEgg() {
+    if (this.eggLimit > 0) { return this.eggsLayed < this.eggLimit; }
+    return true;
+  }
+
   layEgg() {
     this.eggsLayed++;
     const options = GameConfiguration.entities[EntityIds[EntityType.MonsterEgg]];
@@ -62,26 +68,28 @@ class Monster extends Enemy {
     super.onUpdate(deltaTime);
 
     if (this.type === EntityType.MonsterEgg) {
-      if (GameData.tickTime >= this.growthTime) {
+      if (GameData.tickTime >= this.hatchTime) {
+        const hatchTime = this.hatchTime;
         this.changeType(EntityType.MonsterSmall);
-        this.nextMoveTime = this.growthTime + this.moveInterval;
-        this.growthTime += this.growthInterval;
+        this.growthTime = hatchTime +
+          MathUtil.getRandomValueInRangeInt(this.growthDuration);
+        this.nextMoveTime = hatchTime + this.moveInterval;
         console.log(this.name + ": I hatched!");
       }
     }
     else if (this.type === EntityType.MonsterSmall) {
       if (GameData.tickTime >= this.growthTime) {
+        const growthTime = this.growthTime;
         this.changeType(EntityType.MonsterBig);
-        this.eggsLayed = 0;
-        this.eggTime = this.growthTime + this.eggInterval;
+        this.eggTime = growthTime + MathUtil.getRandomValueInRangeInt(this.eggDuration);
         console.log(this.name + ": I grew bigger!");
       }
     }
     else if (this.type === EntityType.MonsterBig) {
-      if (this.eggsLayed < this.eggLimit && GameData.tickTime >= this.eggTime) {
+      if (this.canLayEgg() && GameData.tickTime >= this.eggTime) {
         this.layEgg();
-        this.eggTime += this.eggInterval;
-          console.log(this.name + ": I layed an egg!");
+        this.eggTime += MathUtil.getRandomValueInRangeInt(this.eggDuration);
+        console.log(this.name + ": I layed an egg! " + this.eggsLayed + "/" + this.eggLimit + " egg limit");
       }
     }
   }

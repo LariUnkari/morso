@@ -11,14 +11,14 @@ class GameConfiguration {
     this.entities[EntityIds[EntityType.MonsterEgg]] = {
       spriteName: "entity_monster_egg",
       canMove:false,
-      growthTime: 30000,
-      killScore: 50
+      incubateDuration: { min:20000, max:30000 },
+      killScore: 200
     };
     this.entities[EntityIds[EntityType.MonsterSmall]] = {
       spriteName: "entity_monster_small",
       canMove:true,
       moveInterval: 500,
-      growthTime: 30000,
+      growthDuration: { min:40000, max:50000 },
       killScore: 150,
       stuckMemoryDuration:5
     };
@@ -26,8 +26,8 @@ class GameConfiguration {
       spriteName: "entity_monster_big",
       canMove:true,
       moveInterval: 1000,
-      eggTime: 40000,
-      eggLimit: 2,
+      layEggDuration: { min:25000, max:45000 },
+      layEggLimit: 2,
       killScore: 100,
       stuckMemoryDuration:7
     };
