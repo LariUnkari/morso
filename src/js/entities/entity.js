@@ -20,7 +20,7 @@ class Entity extends PIXI.Container {
     this.canPush = options.canPush === true;
     this.isAlive = true;
     this.isEnabled = false;
-    this.coordinate = new Coordinate(0, 0);
+    this.coordinate = new Coordinate(-1, -1);
   }
 
   processOptions(options) {
@@ -55,6 +55,7 @@ class Entity extends PIXI.Container {
     this.isAlive = false;
     this.sprite.tint = 0x333333;
     this.disable();
+    GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
   }
 
   revive() {
@@ -63,7 +64,12 @@ class Entity extends PIXI.Container {
   }
 
   setCoordinate(coordinate) {
+    if (this.coordinate.equals(coordinate)) { return; }
+
+    GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
     this.coordinate = coordinate;
+    GameData.map.setOccupationOfCoordinate(this.coordinate, this);
+
     this.position.copyFrom(
       GameData.map.getGridPositionFromCoordinatesWithOffset(coordinate));
   }
@@ -107,42 +113,44 @@ class Entity extends PIXI.Container {
   }
 
   checkMove(direction) {
-    if (this.canMove !== true) { return false; }
+    const result = { isValid:false, tile:null, entity:null };
+    if (this.canMove !== true) { return result; }
 
     const desiredPos = this.coordinate.plus(direction);
-    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
+    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return result; }
 
-    const tile = GameData.map.getTileAtCoordinates(desiredPos);
-    if (tile === null || tile.type == TileType.None) { return false; }
+    result.tile = GameData.map.getTileAtCoordinates(desiredPos);
+    result.entity = GameData.map.getOccupationOfCoordinate(desiredPos);
 
-    if (tile.type === TileType.Wall) {
-      if (!this.canPush || !this.couldPush(tile, direction)) { return false; }
-    }
+    if (result.tile === null || result.tile.type !== TileType.Floor) { return result; }
+    if (result.entity && !this.canAttackEntity(result.entity)) { return result; }
 
-    return true;
+    result.isValid = true;
+    return result;
   }
 
   tryMove(direction) {
-    if (this.canMove !== true) { return false; }
+    const moveTest = this.checkMove(direction);
 
-    const desiredPos = this.coordinate.plus(direction);
-    if (GameData.map.isCoordinateOutOfBounds(desiredPos)) { return false; }
-
-    const tile = GameData.map.getTileAtCoordinates(desiredPos);
-    if (tile === null || tile.type == TileType.None) { return false; }
-
-    if (tile.type === TileType.Wall) {
-      if (!this.canPush || !this.tryPush(tile, direction)) { return false; }
+    if (!moveTest.isValid) {
+      if (moveTest.tile && moveTest.tile.type === TileType.Wall) {
+        if (!this.tryPush(moveTest.tile, direction)) { return false; }
+      } else { return false; }
     }
 
     this.move(direction);
     return true;
   }
 
+  canAttackEntity(target) {
+    return false;
+  }
+
   checkPush(fromTile, direction) {
     const result = { isValid:false, tile:null, entity:null };
 
     if (this.canMove !== true) { return result; }
+    if (this.canPush !== true) { return result; }
     if (direction.x === 0 && direction.y === 0) { return result; }
 
     let tile;
@@ -158,16 +166,10 @@ class Entity extends PIXI.Container {
 
       if (tile.type === TileType.Floor) {
         result.tile = tile;
+        result.entity = GameData.map.getOccupationOfCoordinate(coordinate);
 
-        for (let entity of GameData.getAllEntities()) {
-          if (entity.coordinate.equals(coordinate)) {
-            result.entity = entity;
-          }
-        }
-
-        if (result.entity !== null) {
-          result.isValid =
-            ((result.entity.type >> EntityType.Enemy) & 1) === 1;
+        if (result.entity) {
+          result.isValid = ((result.entity.type >> EntityType.Enemy) & 1) === 1;
         } else {
           result.isValid = true;
         }
@@ -182,18 +184,16 @@ class Entity extends PIXI.Container {
   }
 
   tryPush(fromTile, direction) {
-    const push = this.checkPush(fromTile, direction);
+    const pushTest = this.checkPush(fromTile, direction);
 
-    if (push.isValid === true) {
-      push.tile.setType(TileType.Wall);
+    if (pushTest.isValid === true) {
+      pushTest.tile.setType(TileType.Wall);
       fromTile.setType(TileType.Floor);
 
-      if (push.entity !== null) {
-        push.entity.kill();
-      }
+      if (pushTest.entity) { pushTest.entity.kill(); }
     }
 
-    return push.isValid;
+    return pushTest.isValid;
   }
 
   // Called each frame with delta time in milliseconds

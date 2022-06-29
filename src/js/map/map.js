@@ -41,6 +41,8 @@ class Map extends PIXI.Container {
         this.gridContainer.addChild(newTile);
       }
     }
+
+    this.occupiedTiles = {};
   }
 
   generate() {
@@ -62,6 +64,47 @@ class Map extends PIXI.Container {
   isCoordinateOutOfBounds(coordinate) {
     return coordinate.x < 0 || coordinate.x >= this.grid.width ||
            coordinate.y < 0 || coordinate.y >= this.grid.height;
+  }
+
+  isCoordinateOccupied(coordinate) {
+    return this.occupiedTiles[this.getCoordinateId(coordinate)] !== undefined;
+  }
+
+  getOccupationOfCoordinate(coordinate) {
+    if (this.isCoordinateOutOfBounds(coordinate)) { return null; }
+
+    const coordinateId = this.getCoordinateId(coordinate);
+    return this.occupiedTiles[coordinateId];
+  }
+
+  setOccupationOfCoordinate(coordinate, occupier) {
+    if (!occupier || this.isCoordinateOutOfBounds(coordinate)) { return; }
+
+    const coordinateId = this.getCoordinateId(coordinate);
+    const previousOccupier = this.occupiedTiles[coordinateId];
+
+    if (!previousOccupier) {
+      this.occupiedTiles[coordinateId] = occupier;
+    } else {
+      console.warn("Unable to set a occupier '" + occupier.name + "' to coordinate '" +
+        coordinateId + "' " + coordinate.toString() + ", expected undefined, found " +
+        previousOccupier.name);
+    }
+  }
+
+  removeOccupationOfCoordinate(coordinate, occupier) {
+    if (!occupier || this.isCoordinateOutOfBounds(coordinate)) { return; }
+
+    const coordinateId = this.getCoordinateId(coordinate);
+    const previousOccupier = this.occupiedTiles[coordinateId];
+
+    if (occupier === previousOccupier) {
+      this.occupiedTiles[coordinateId] = undefined;
+    } else {
+      console.warn("Unable to remove a non-matching occupier from coordinate '" +
+        coordinateId + "' " + coordinate.toString() + ", expected " + occupier.name +
+        ", found " + (previousOccupier ? "'" + previousOccupier.name + "'" : "undefined"));
+    }
   }
 
   getCoordinateId(coordinate) {

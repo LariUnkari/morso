@@ -111,6 +111,7 @@ class Monster extends Enemy {
       return;
     }
 
+    let moveTest = null;
     let desiredDirection = this.getPlayerBestDirection();
     let targetCoordinate = this.coordinate.plus(desiredDirection);
 
@@ -134,9 +135,10 @@ class Monster extends Enemy {
 
     for (let dir of GridDirections) {
       if (dir.equals(desiredDirection)) { continue; } // Was already unable to move there
+      moveTest = this.checkMove(dir);
       targetCoordinate = this.coordinate.plus(dir);
 
-      if (this.checkMove(dir)) {
+      if (moveTest.isValid) {
         validDirs++;
 
         if (!this.checkWasStuckAt(targetCoordinate)) { directions.push(dir); }
