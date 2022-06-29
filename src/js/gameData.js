@@ -7,6 +7,7 @@ class GameData {
     this.kills = 0;
     this.score = 0;
     this.isGameOn = false;
+    this.isGameFinished = false;
     this.gameTime = 0;
     this.tickTime = 0;
   }

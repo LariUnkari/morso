@@ -75,6 +75,7 @@ class MainView extends PIXI.Container {
     if (GameData.isGameOn === false) { return; }
 
     if (this.checkGameEnded()) {
+      GameData.isGameFinished = true;
       GameEventHandler.emit(GameEvent.GAME_ENDED);
     }
   }
@@ -89,11 +90,12 @@ class MainView extends PIXI.Container {
     this.gameView.quitGame();
     this.quitButton.visible = false;
     this.startButton.visible = true;
-    this.gameResult.visible = false;
+    this.onGameEnded();
   }
 
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
+    GameData.isGameFinished = true;
   }
 
   onEnemySpawned(spawnedEnemy) {
@@ -111,8 +113,10 @@ class MainView extends PIXI.Container {
   onGameEnded() {
     this.gameResult.visible = false;
 
-    GameData.player.disable();
     GameData.isGameOn = false;
+    GameData.player.disable();
+
+    if (!GameData.isGameFinished) { return; }
 
     if (GameData.player.isAlive === false) {
       this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");

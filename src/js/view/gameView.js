@@ -77,7 +77,8 @@ class GameView extends PIXI.Container {
     for (let i = 0; i < GameData.enemies.length; i++) {
       this.removeChild(GameData.enemies[i]);
     }
-    
+
+    GameData.isGameFinished = false;
     GameData.enemies = [];
     GameData.gameTime = 0;
     GameData.tickTime = 0;
