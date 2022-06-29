@@ -65,7 +65,7 @@ class Map extends PIXI.Container {
   }
 
   getCoordinateId(coordinate) {
-    return (this.grid.height * coordinate.y + coordinate.x).toString();
+    return (this.grid.width * coordinate.y + coordinate.x).toString();
   }
 
   getGridPositionFromCoordinatesWithOffset(coordinate) {
