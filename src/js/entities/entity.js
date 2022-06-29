@@ -90,6 +90,7 @@ class Entity extends PIXI.Container {
 
       dist--;
       nextCoordinate = nextCoordinate.plus(direction);
+      if (GameData.map.isCoordinateOutOfBounds(nextCoordinate)) { break; }
       tile = GameData.map.getTileAtCoordinates(nextCoordinate);
     }
 
