@@ -14,7 +14,7 @@ class Enemy extends Entity {
 
   processOptions(options) {
     super.processOptions(options);
-    this.moveInterval = Number.isNaN(options.moveInterval) ? 1000 : options.moveInterval;
+    this.moveInterval = Number.isNaN(options.moveInterval) ? 0 : options.moveInterval;
     this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
   }
 
@@ -27,7 +27,7 @@ class Enemy extends Entity {
   onUpdate(deltaTime) {
     super.onUpdate(deltaTime);
 
-    if (this.canMove === true && this.isEnabled === true) {
+    if (this.canMove === true && this.moveInterval > 0 && this.isEnabled === true) {
       if (GameData.tickTime >= this.nextMoveTime) {
         this.nextMoveTime += this.moveInterval;
         this.onMoveTime();
