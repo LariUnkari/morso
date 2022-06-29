@@ -37,7 +37,7 @@ class Monster extends Enemy {
   }
 
   changeType(newType) {
-    if (((newType >> EntityType.Enemy) & 1) !== 1) {
+    if (!MathUtil.getBitFromMask(EntityType.Enemy, newType)) {
       console.warn(this.name + ": Can't change from enemy type " + this.type +
         " '" + EntityIds[this.type] + "' to a non-enemy type " + newType +
         " '" + EntityIds[newType] + "'!");

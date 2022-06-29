@@ -2,6 +2,7 @@ import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
 import { TileType } from "../map/tileType.js";
 import { EntityType } from "../entities/entityType.js";
+import { MathUtil } from "../utility/mathUtil.js";
 
 class Entity extends PIXI.Container {
   constructor(name, type, options) {
@@ -169,7 +170,7 @@ class Entity extends PIXI.Container {
         result.entity = GameData.map.getOccupationOfCoordinate(coordinate);
 
         if (result.entity) {
-          result.isValid = ((result.entity.type >> EntityType.Enemy) & 1) === 1;
+          result.isValid = MathUtil.getBitFromMask(EntityType.Enemy, result.entity.type);
         } else {
           result.isValid = true;
         }
