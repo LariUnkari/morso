@@ -51,7 +51,12 @@ class Monster extends Enemy {
   }
 
   canLayEgg() {
+    if (GameData.getEnemyCount(true) >= GameConfiguration.entities.enemyLimit) {
+      return false;
+    }
+
     if (this.eggLimit > 0) { return this.eggsLayed < this.eggLimit; }
+
     return true;
   }
 

@@ -80,6 +80,7 @@ class GameView extends PIXI.Container {
     GameData.enemies = [];
     GameData.gameTime = 0;
     GameData.tickTime = 0;
+    GameData.kills = 0;
 
     GameEventHandler.emit(GameEvent.GAME_ENDED);
   }

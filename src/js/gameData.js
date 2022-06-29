@@ -4,10 +4,15 @@ class GameData {
     this.map = null;
     this.player = null;
     this.enemies = [];
+    this.kills = 0;
     this.score = 0;
     this.isGameOn = false;
     this.gameTime = 0;
     this.tickTime = 0;
+  }
+
+  getEnemyCount(onlyLiving) {
+    return this.enemies.length - (onlyLiving ? this.kills : 0);
   }
 
   getAllEntities() {

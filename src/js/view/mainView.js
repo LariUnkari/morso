@@ -93,6 +93,7 @@ class MainView extends PIXI.Container {
 
   onEnemyDied(deadEnemy) {
     GameData.score += deadEnemy.killScore;
+    GameData.kills += 1;
     this.gameScore.text = "SCORE: " + GameData.score;
 
     for (let enemy of GameData.enemies) {

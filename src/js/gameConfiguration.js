@@ -2,7 +2,7 @@ import { EntityType, EntityIds } from "./entities/entityType.js";
 
 class GameConfiguration {
   constructor() {
-    this.entities = {};
+    this.entities = { enemyLimit:32 };
     this.entities[EntityIds[EntityType.Player]] = {
       spriteName: "entity_player",
       canMove:true,
