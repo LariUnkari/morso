@@ -1,5 +1,7 @@
 import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { Enemy } from "./enemy.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
@@ -8,10 +10,14 @@ class Monster extends Enemy {
   constructor(name, type, options) {
     super(name, type, options);
 
+    if (this.type === EntityType.MonsterEgg) {
+      this.growthTime = GameData.tickTime + this.growthInterval;
+    }
     if (this.type === EntityType.MonsterSmall) {
       this.growthTime = GameData.tickTime + this.growthInterval;
     }
     if (this.type === EntityType.MonsterBig) {
+      this.eggsLayed = 0;
       this.eggTime = GameData.tickTime + this.eggInterval;
     }
 
@@ -42,20 +48,39 @@ class Monster extends Enemy {
     this.updateSprite();
   }
 
+  layEgg() {
+    this.eggsLayed++;
+    const options = GameConfiguration.entities[EntityIds[EntityType.MonsterEgg]];
+    const egg = new Monster(this.name + "-" + this.eggsLayed, EntityType.MonsterEgg, options);
+    egg.setCoordinate(this.coordinate);
+    egg.enable();
+    GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, egg);
+  }
+
   onUpdate(deltaTime) {
     super.onUpdate(deltaTime);
 
-    if (this.type === EntityType.MonsterSmall) {
+    if (this.type === EntityType.MonsterEgg) {
+      if (GameData.tickTime >= this.growthTime) {
+        this.changeType(EntityType.MonsterSmall);
+        this.nextMoveTime = this.growthTime + this.moveInterval;
+        this.growthTime += this.growthInterval;
+        console.log(this.name + ": I hatched!");
+      }
+    }
+    else if (this.type === EntityType.MonsterSmall) {
       if (GameData.tickTime >= this.growthTime) {
         this.changeType(EntityType.MonsterBig);
+        this.eggsLayed = 0;
         this.eggTime = this.growthTime + this.eggInterval;
         console.log(this.name + ": I grew bigger!");
       }
     }
     else if (this.type === EntityType.MonsterBig) {
       if (GameData.tickTime >= this.eggTime) {
-        console.log(this.name + ": Laying an egg, IF I ONLY KNEW HOW");
+        this.layEgg();
         this.eggTime += this.eggInterval;
+          console.log(this.name + ": I layed an egg!");
       }
     }
   }

@@ -8,6 +8,12 @@ class GameConfiguration {
       canMove:true,
       canPush:true
     };
+    this.entities[EntityIds[EntityType.MonsterEgg]] = {
+      spriteName: "entity_monster_egg",
+      canMove:false,
+      growthTime: 30000,
+      killScore: 50
+    };
     this.entities[EntityIds[EntityType.MonsterSmall]] = {
       spriteName: "entity_monster_small",
       canMove:true,

@@ -54,8 +54,6 @@ class GameView extends PIXI.Container {
       options = GameConfiguration.entities[EntityIds[type]];
 
       monster = new Monster("Monster" + (i + 1), type, options);
-      this.addChild(monster);
-      GameData.enemies[i] = monster;
 
       x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
       y = Math.floor((i + 1) * GameData.map.grid.height / (enemyCount + 1));
@@ -64,6 +62,8 @@ class GameView extends PIXI.Container {
         new Coordinate(x, y), TileType.Floor);
       monster.setCoordinate(startTile.coordinate);
       monster.enable();
+
+      GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, monster);
 
       GameData.isGameOn = true;
     }

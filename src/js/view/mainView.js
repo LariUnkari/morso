@@ -2,6 +2,7 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { GameView } from "./gameView.js";
+import { EntityType, EntityIds } from "../entities/entityType.js";
 
 const STYLE_TEXT_GENERIC = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
 const STYLE_BUTTON_QUIT = { fontFamily:"Arial", fontSize:32, fill:0xFF0000 };
@@ -62,6 +63,7 @@ class MainView extends PIXI.Container {
       this.quitButton, this.gameResult);
 
     GameEventHandler.on(GameEvent.PLAYER_DIED, this.onPlayerDied.bind(this));
+    GameEventHandler.on(GameEvent.ENEMY_SPAWNED, this.onEnemySpawned.bind(this));
     GameEventHandler.on(GameEvent.ENEMY_DIED, this.onEnemyDied.bind(this));
     GameEventHandler.on(GameEvent.GAME_ENDED, this.onGameEnded.bind(this));
   }
@@ -81,6 +83,12 @@ class MainView extends PIXI.Container {
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
     this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");
+  }
+
+  onEnemySpawned(spawnedEnemy) {
+
+      this.gameView.addChild(spawnedEnemy);
+      GameData.enemies.push(spawnedEnemy);
   }
 
   onEnemyDied(deadEnemy) {
