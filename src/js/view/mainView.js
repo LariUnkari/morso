@@ -68,6 +68,17 @@ class MainView extends PIXI.Container {
     GameEventHandler.on(GameEvent.GAME_ENDED, this.onGameEnded.bind(this));
   }
 
+  // Called each frame with delta time in milliseconds
+  onUpdate(deltaTime) {
+    this.gameView.onUpdate(deltaTime);
+
+    if (GameData.isGameOn === false) { return; }
+
+    if (this.checkGameEnded()) {
+      GameEventHandler.emit(GameEvent.GAME_ENDED);
+    }
+  }
+
   onClickStart() {
     this.gameView.startGame();
     this.startButton.visible = false;
@@ -78,11 +89,11 @@ class MainView extends PIXI.Container {
     this.gameView.quitGame();
     this.quitButton.visible = false;
     this.startButton.visible = true;
+    this.gameResult.visible = false;
   }
 
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
-    this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");
   }
 
   onEnemySpawned(spawnedEnemy) {
@@ -92,20 +103,32 @@ class MainView extends PIXI.Container {
   }
 
   onEnemyDied(deadEnemy) {
-    GameData.score += deadEnemy.killScore;
     GameData.kills += 1;
+    GameData.score += deadEnemy.killScore;
     this.gameScore.text = "SCORE: " + GameData.score;
-
-    for (let enemy of GameData.enemies) {
-      if (enemy.isAlive === true) { return; }
-    }
-
-    GameData.player.disable();
-    this.showGameResult(true, "VICTORY", "YOU SURVIVED ALL OF THE MORSO");
   }
 
   onGameEnded() {
     this.gameResult.visible = false;
+
+    GameData.player.disable();
+    GameData.isGameOn = false;
+
+    if (GameData.player.isAlive === false) {
+      this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");
+    } else {
+      this.showGameResult(true, "VICTORY", "YOU SURVIVED ALL OF THE MORSO");
+    }
+  }
+
+  checkGameEnded() {
+    if (GameData.player.isAlive === false) { return true; }
+
+    for (let enemy of GameData.enemies) {
+      if (enemy.isAlive === true) { return false; }
+    }
+
+    return true;
   }
 
   showGameResult(isWin, title, description) {
@@ -149,11 +172,7 @@ class MainView extends PIXI.Container {
     this.gameResult.position.set(
       Math.floor(actualWidth / 2),
       Math.floor(actualHeight / 2) + 4);
-  }
 
-  // Called each frame with delta time in milliseconds
-  onUpdate(deltaTime) {
-    this.gameView.onUpdate(deltaTime);
   }
 }
 

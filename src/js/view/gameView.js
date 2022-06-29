@@ -78,14 +78,11 @@ class GameView extends PIXI.Container {
       this.removeChild(GameData.enemies[i]);
     }
     
-    GameData.isGameOn = false;
     GameData.enemies = [];
     GameData.gameTime = 0;
     GameData.tickTime = 0;
     GameData.kills = 0;
     GameData.score = 0;
-
-    GameEventHandler.emit(GameEvent.GAME_ENDED);
   }
 
   // Called each frame with delta time in milliseconds
