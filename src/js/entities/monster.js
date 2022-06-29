@@ -64,7 +64,7 @@ class Monster extends Enemy {
     this.eggsLayed++;
     const options = GameConfiguration.entities[EntityIds[EntityType.MonsterEgg]];
     const egg = new Monster(this.name + "-" + this.eggsLayed, EntityType.MonsterEgg, options);
-    egg.setCoordinate(coordinate);
+    egg.setCoordinate(coordinate, false, true);
     egg.enable();
     GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, egg);
   }

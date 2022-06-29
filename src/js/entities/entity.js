@@ -64,11 +64,13 @@ class Entity extends PIXI.Container {
     this.sprite.tint = 0xFFFFFF;
   }
 
-  setCoordinate(coordinate) {
+  setCoordinate(coordinate, removeOccupation, setOccupation) {
     if (this.coordinate.equals(coordinate)) { return; }
 
-    if (this.isAlive) {
+    if (removeOccupation) {
       GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
+    }
+    if (setOccupation) {
       GameData.map.setOccupationOfCoordinate(coordinate, this);
     }
 
@@ -107,7 +109,7 @@ class Entity extends PIXI.Container {
   }
 
   move(direction) {
-    this.setCoordinate(this.coordinate.plus(direction));
+    this.setCoordinate(this.coordinate.plus(direction), true, true);
     this.onMoved();
   }
 

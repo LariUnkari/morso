@@ -42,7 +42,7 @@ class GameView extends PIXI.Container {
     let startTile = FillSearch.findNearestTileOfType(GameData.map,
       new Coordinate(5, 10), TileType.Floor);
 
-    GameData.player.setCoordinate(startTile.coordinate);
+    GameData.player.setCoordinate(startTile.coordinate, false, true);
     GameData.player.visible = true;
     GameData.player.revive();
     GameData.player.enable();
@@ -60,7 +60,7 @@ class GameView extends PIXI.Container {
 
       startTile = FillSearch.findNearestTileOfType(GameData.map,
         new Coordinate(x, y), TileType.Floor);
-      monster.setCoordinate(startTile.coordinate);
+      monster.setCoordinate(startTile.coordinate, false, true);
       monster.enable();
 
       GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, monster);
