@@ -30,6 +30,7 @@ class Monster extends Enemy {
 
     this.growthInterval = Number.isNaN(options.growthTime) ? 30000 : options.growthTime;
     this.eggInterval = Number.isNaN(options.eggTime) ? 40000 : options.eggTime;
+    this.eggLimit = Number.isNaN(options.eggLimit) ? 0 : options.eggLimit;
     this.stuckMemoryDuration =
       Number.isNaN(options.stuckMemoryDuration) ? 7 : options.stuckMemoryDuration;
   }
@@ -77,7 +78,7 @@ class Monster extends Enemy {
       }
     }
     else if (this.type === EntityType.MonsterBig) {
-      if (GameData.tickTime >= this.eggTime) {
+      if (this.eggsLayed < this.eggLimit && GameData.tickTime >= this.eggTime) {
         this.layEgg();
         this.eggTime += this.eggInterval;
           console.log(this.name + ": I layed an egg!");

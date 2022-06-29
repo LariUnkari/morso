@@ -27,6 +27,7 @@ class GameConfiguration {
       canMove:true,
       moveInterval: 1000,
       eggTime: 40000,
+      eggLimit: 2,
       killScore: 100,
       stuckMemoryDuration:7
     };
