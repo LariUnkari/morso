@@ -73,7 +73,7 @@ class Monster extends Enemy {
         this.changeType(EntityType.MonsterSmall);
         this.growthTime = hatchTime +
           MathUtil.getRandomValueInRangeInt(this.growthDuration);
-        this.nextMoveTime = hatchTime + this.moveInterval;
+        this.nextMoveTime = hatchTime - hatchTime % this.moveInterval + 2 * this.moveInterval;
         console.log(this.name + ": I hatched!");
       }
     }

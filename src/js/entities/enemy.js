@@ -7,7 +7,8 @@ class Enemy extends Entity {
   constructor(name, type, options) {
     super(name, type, options);
 
-    this.nextMoveTime = this.moveInterval;
+    this.nextMoveTime = GameData.tickTime > 0 ? GameData.tickTime -
+      GameData.tickTime % this.moveInterval + 2 * this.moveInterval : this.moveInterval;
   }
 
   processOptions(options) {
