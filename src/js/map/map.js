@@ -54,6 +54,8 @@ class Map extends PIXI.Container {
   }
 
   clear() {
+    this.occupiedTiles = {};
+    
     for (let x = 0; x < this.grid.width; x++) {
       for (let y = 0; y < this.grid.height; y++) {
         this.tiles[x][y].setType(TileType.None);
