@@ -105,7 +105,7 @@ class Monster extends Enemy {
     }
 
     let moveTest = null;
-    let desiredDirection = this.getPlayerBestDirection();
+    let desiredDirection = this.getBestDirectionToPlayer();
     let targetCoordinate = this.coordinate.plus(desiredDirection);
 
     if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
@@ -167,14 +167,13 @@ class Monster extends Enemy {
     }
   }
 
-  getPlayerBestDirection() {
+  getBestDirectionToPlayer() {
     const diff = GameData.player.coordinate.minus(this.coordinate);
 
-    if (Math.abs(diff.x) > Math.abs(diff.y)) {
-      return diff.x < 0 ? Direction.West : Direction.East;
-    } else {
-      return diff.y < 0 ? Direction.North : Direction.South;
-    }
+    if (diff.x === 0 && diff.y === 0) { return diff; }
+    
+    const index = Math.round(diff.getAngleOnGrid() / 45);
+    return GridDirections[index < 0 ? 8 + index : index];
   }
 
   checkWasStuckAt(coordinate) {
