@@ -1,14 +1,14 @@
 import { Coordinate } from "./coordinate.js";
 
 const Direction = {
-  Left:new Coordinate(-1, 0),
-  Up:new Coordinate(0, -1),
-  Right:new Coordinate(1, 0),
-  Down:new Coordinate(0, 1)
+  North:      new Coordinate(0, -1),
+  East:       new Coordinate(1, 0),
+  South:      new Coordinate(0, 1),
+  West:       new Coordinate(-1, 0)
 };
 
 const GridDirections = [
-  Direction.Left, Direction.Up, Direction.Right, Direction.Down
+  Direction.North, Direction.East, Direction.South, Direction.West
 ];
 
 export { Direction, GridDirections };

@@ -171,9 +171,9 @@ class Monster extends Enemy {
     const diff = GameData.player.coordinate.minus(this.coordinate);
 
     if (Math.abs(diff.x) > Math.abs(diff.y)) {
-      return diff.x < 0 ? Direction.Left : Direction.Right;
+      return diff.x < 0 ? Direction.West : Direction.East;
     } else {
-      return diff.y < 0 ? Direction.Up : Direction.Down;
+      return diff.y < 0 ? Direction.North : Direction.South;
     }
   }
 

@@ -101,25 +101,25 @@ class GameView extends PIXI.Container {
 
   onInputLeft(isDown) {
     if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.Left); }
+      if (isDown) { GameData.player.tryMove(Direction.West); }
     }
   }
 
   onInputUp(isDown) {
     if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.Up); }
+      if (isDown) { GameData.player.tryMove(Direction.North); }
     }
   }
 
   onInputRight(isDown) {
     if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.Right); }
+      if (isDown) { GameData.player.tryMove(Direction.East); }
     }
   }
 
   onInputDown(isDown) {
     if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.Down); }
+      if (isDown) { GameData.player.tryMove(Direction.South); }
     }
   }
 }
