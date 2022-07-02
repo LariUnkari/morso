@@ -20,8 +20,12 @@ class Coordinate {
   }
 
   getManhattanDistanceTo(toCoordinate) {
-    const diff = this.minus(toCoordinate);
-    return Math.abs(diff.x) + Math.abs(diff.y);
+    return this.getManhattanLength(this.minus(toCoordinate));
+  }
+
+  getManhattanLength() {
+    return Math.abs(this.x) + Math.abs(this.y);
+  }
 
   // North is 0, South is 180, East side is positive, West side negative from zero
   getAngleOnGrid() {
