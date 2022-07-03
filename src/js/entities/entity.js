@@ -179,9 +179,8 @@ class Entity extends PIXI.Container {
         result.tile = tile;
         result.entity = GameData.map.getOccupationOfCoordinate(coordinate);
 
-        if (result.entity) {
-          result.isValid = MathUtil.getBitFromMask(EntityType.Enemy, result.entity.type);
-        } else {
+        // Empty floor tile at the end is a valid push, always
+        if (!result.entity) {
           result.isValid = true;
         }
 
@@ -189,6 +188,18 @@ class Entity extends PIXI.Container {
       }
 
       coordinate.offset(direction);
+    }
+
+    // Entity and floor tile have been found already, check for squishing
+    if (!result.isValid && result.tile && result.entity) {
+      coordinate.offset(direction);
+
+      if (!GameData.map.isCoordinateOutOfBounds(coordinate)) {
+        tile = GameData.map.getTileAtCoordinates(coordinate);
+        result.isValid = tile.type === TileType.Wall;
+      } else {
+        result.isValid = true;
+      }
     }
 
     return result;
