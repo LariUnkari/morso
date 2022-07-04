@@ -18,7 +18,6 @@ class Entity extends PIXI.Container {
     this.sprite.anchor.set(0.5);
     this.addChild(this.sprite);
 
-    this.canPush = options.canPush === true;
     this.isAlive = true;
     this.isEnabled = false;
     this.coordinate = new Coordinate(-1, -1);
@@ -27,6 +26,7 @@ class Entity extends PIXI.Container {
   processOptions(options) {
     this.debug = options.debug === true;
     this.canMove = options.canMove === true;
+    this.canPush = options.canPush === true;
     if (options.spriteName !== undefined) { this.setSpriteName(options.spriteName); }
   }
 
