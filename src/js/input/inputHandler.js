@@ -1,6 +1,9 @@
 class InputHandler {
+  constructor() {
+    this.keyMap = {};
+  }
+
   setupInputKey(name, keyCode, callback) {
-    console.log("Input! Creating input handler for key " + name + "(" + keyCode + ")");
 
     const key = {};
     key.name = name;
@@ -8,6 +11,7 @@ class InputHandler {
     key.isDown = false;
     key.isUp = true;
     key.callback = callback;
+    this.keyMap[String.fromCharCode(keyCode)] = key;
 
     //The `downHandler`
     key.downHandler = (event) => {
@@ -50,4 +54,4 @@ class InputHandler {
   }
 }
 
-export { InputHandler };
+export default (new InputHandler());

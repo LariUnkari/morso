@@ -3,14 +3,12 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "../map/coordinate.js";
-import { Direction } from "../map/direction.js";
 import { Map } from "../map/map.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
 import { Monster } from "../entities/monster.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 import { FillSearch } from "../map/fillSearch.js";
-import { InputHandler } from "../input/inputHandler.js";
 
 class GameView extends PIXI.Container {
   constructor() {
@@ -22,17 +20,6 @@ class GameView extends PIXI.Container {
     GameData.map = new Map(40, 21, undefined);
     GameData.map.visible = false;
     this.addChild(GameData.map, GameData.player);
-
-    this.inputHandler = new InputHandler();
-
-    this.arrowLeft = this.inputHandler.setupInputKey(
-      "ArrowLeft", 0x25, this.onInputLeft.bind(this));
-    this.arrowUp = this.inputHandler.setupInputKey(
-      "ArrowUp", 0x26, this.onInputUp.bind(this));
-    this.arrowRight = this.inputHandler.setupInputKey(
-      "ArrowRight", 0x27, this.onInputRight.bind(this));
-    this.arrowDown = this.inputHandler.setupInputKey(
-      "ArrowDown", 0x28, this.onInputDown.bind(this));
   }
 
   startGame() {
@@ -96,30 +83,6 @@ class GameView extends PIXI.Container {
 
     for (let i = 0; i < GameData.enemies.length; i++) {
       GameData.enemies[i].onUpdate(deltaTime);
-    }
-  }
-
-  onInputLeft(isDown) {
-    if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.West); }
-    }
-  }
-
-  onInputUp(isDown) {
-    if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.North); }
-    }
-  }
-
-  onInputRight(isDown) {
-    if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.East); }
-    }
-  }
-
-  onInputDown(isDown) {
-    if (GameData.player.isEnabled) {
-      if (isDown) { GameData.player.tryMove(Direction.South); }
     }
   }
 }
