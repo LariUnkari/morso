@@ -72,6 +72,7 @@ class Monster extends Enemy {
   onUpdate(deltaTime) {
     super.onUpdate(deltaTime);
 
+    // Handle egg laying and growth
     if (this.type === EntityType.MonsterEgg) {
       if (GameData.tickTime >= this.hatchTime) {
         const hatchTime = this.hatchTime;

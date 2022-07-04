@@ -81,6 +81,7 @@ class GameView extends PIXI.Container {
     GameData.gameTime += deltaTime;
     GameData.tickTime = Math.floor(GameData.gameTime);
 
+    if (GameData.player)  { GameData.player.onUpdate(deltaTime); }
     for (let i = 0; i < GameData.enemies.length; i++) {
       GameData.enemies[i].onUpdate(deltaTime);
     }

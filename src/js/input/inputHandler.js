@@ -9,18 +9,20 @@ class InputHandler {
     key.name = name;
     key.keyCode = keyCode;
     key.isDown = false;
-    key.isUp = true;
+    key.wasDown = true;
     key.callback = callback;
     this.keyMap[String.fromCharCode(keyCode)] = key;
 
     //The `downHandler`
     key.downHandler = (event) => {
       if (event.keyCode === key.keyCode) {
-        if (key.isUp && key.callback !== undefined) {
-          key.callback(true);
-        }
+        key.wasDown = key.isDown;
         key.isDown = true;
-        key.isUp = false;
+
+        if (key.isDown && !key.wasDown) {
+          if (key.callback !== undefined) { key.callback(true); }
+        }
+
         event.preventDefault();
       }
     };
@@ -28,11 +30,13 @@ class InputHandler {
     //The `upHandler`
     key.upHandler = (event) => {
       if (event.keyCode === key.keyCode) {
-        if (key.isDown && key.callback !== undefined) {
-          key.callback(false);
-        }
+        key.wasDown = key.isDown;
         key.isDown = false;
-        key.isUp = true;
+
+        if (!key.isDown && key.wasDown) {
+          if (key.callback !== undefined) { key.callback(false); }
+        }
+
         event.preventDefault();
       }
     };

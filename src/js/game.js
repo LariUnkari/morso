@@ -1,5 +1,5 @@
-import { MainView } from "./view/mainView.js";
 import GameData from "./gameData.js";
+import { MainView } from "./view/mainView.js";
 
 class Game {
   constructor(app) {

@@ -6,6 +6,7 @@ class GameConfiguration {
     this.entities[EntityIds[EntityType.Player]] = {
       spriteName: "entity_player",
       canMove:true,
+      moveInterval: 200,
       canPush:true
     };
     this.entities[EntityIds[EntityType.MonsterEgg]] = {

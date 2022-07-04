@@ -21,18 +21,22 @@ class Entity extends PIXI.Container {
     this.isAlive = true;
     this.isEnabled = false;
     this.coordinate = new Coordinate(-1, -1);
+
+    this.nextMoveTime = GameData.tickTime > 0 ? GameData.tickTime -
+      GameData.tickTime % this.moveInterval + 2 * this.moveInterval : this.moveInterval;
   }
 
   processOptions(options) {
     this.debug = options.debug === true;
     this.canMove = options.canMove === true;
+    this.moveInterval = options.moveInterval;
     this.canPush = options.canPush === true;
     if (options.spriteName !== undefined) { this.setSpriteName(options.spriteName); }
   }
 
   setSpriteName(spriteName) {
       if (GameData.resources[spriteName] === undefined) {
-        console.warn("Unable to find sprite by the name of '" + spriteName + "'!");
+        console.warn(this.entityName + ": Unable to find sprite by the name of '" + spriteName + "'!");
         return;
       }
 
@@ -40,7 +44,6 @@ class Entity extends PIXI.Container {
   }
 
   updateSprite() {
-    console.log(this.name + ": Setting sprite to '" + this.spriteName + "'");
     this.sprite.texture = PIXI.Texture.from(this.spriteName);
   }
 
@@ -220,6 +223,15 @@ class Entity extends PIXI.Container {
 
   // Called each frame with delta time in milliseconds
   onUpdate(deltaTime) {
+    if (this.canMove === true && this.moveInterval > 0 && this.isEnabled === true) {
+      if (GameData.tickTime >= this.nextMoveTime) {
+        this.nextMoveTime += this.moveInterval;
+        this.onMoveTime();
+      }
+    }
+  }
+
+  onMoveTime() {
     // Do nothing, extending classes will add behaviour
   }
 }

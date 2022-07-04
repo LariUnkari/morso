@@ -12,10 +12,11 @@ class Player extends Entity {
     super(name, type, options);
     console.log("Player created");
 
-    InputHandler.setupInputKey("MoveWest",  0x25, this.onInputLeft.bind(this));
-    InputHandler.setupInputKey("MoveNorth", 0x26, this.onInputUp.bind(this));
-    InputHandler.setupInputKey("MoveEast",  0x27, this.onInputRight.bind(this));
-    InputHandler.setupInputKey("MoveSouth", 0x28, this.onInputDown.bind(this));
+    this.inputDirection = null;
+    this.moveWestInput = InputHandler.setupInputKey("MoveWest", 0x25, this.onInputWest.bind(this));
+    this.moveEastInput = InputHandler.setupInputKey("MoveEast", 0x27, this.onInputEast.bind(this));
+    this.moveNorthInput = InputHandler.setupInputKey("MoveNorth", 0x26, this.onInputNorth.bind(this));
+    this.moveSouthInput = InputHandler.setupInputKey("MoveSouth", 0x28, this.onInputSouth.bind(this));
   }
 
   enable() {
@@ -41,28 +42,42 @@ class Player extends Entity {
     this.kill();
   }
 
-  onInputLeft(isDown) {
-    if (this.isEnabled) {
-      if (isDown) { this.tryMove(Direction.West); }
+  onMoveTime() {
+    if (this.inputDirection !== null) {
+      this.tryMove(this.inputDirection);
     }
   }
 
-  onInputUp(isDown) {
-    if (this.isEnabled) {
-      if (isDown) { this.tryMove(Direction.North); }
-    }
+  onInputNorth(isDown) {
+    this.inputDirection = isDown ? Direction.North : this.getInputDirection();
+    if (isDown) { this.tryMoveQuick(this.inputDirection); }
   }
 
-  onInputRight(isDown) {
-    if (this.isEnabled) {
-      if (isDown) { this.tryMove(Direction.East); }
-    }
+  onInputSouth(isDown) {
+    this.inputDirection = isDown ? Direction.South : this.getInputDirection();
+    if (isDown) { this.tryMoveQuick(this.inputDirection); }
   }
 
-  onInputDown(isDown) {
-    if (this.isEnabled) {
-      if (isDown) { this.tryMove(Direction.South); }
-    }
+  onInputEast(isDown) {
+    this.inputDirection = isDown ? Direction.East : this.getInputDirection();
+    if (isDown) { this.tryMoveQuick(this.inputDirection); }
+  }
+
+  onInputWest(isDown) {
+    this.inputDirection = isDown ? Direction.West : this.getInputDirection();
+    if (isDown) { this.tryMoveQuick(this.inputDirection); }
+  }
+
+  getInputDirection() {
+    if (this.moveNorthInput.isDown) { return Direction.North; }
+    if (this.moveSouthInput.isDown) { return Direction.South; }
+    if (this.moveEastInput.isDown) { return Direction.East; }
+    if (this.moveWestInput.isDown) { return Direction.West; }
+    return null;
+  }
+
+  tryMoveQuick(direction) {
+    if (this.tryMove(direction)) { this.nextMoveTime += this.moveInterval; }
   }
 }
 

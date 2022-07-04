@@ -5,16 +5,8 @@ import { Entity } from "./entity.js";
 import { EntityType } from "../entities/entityType.js";
 
 class Enemy extends Entity {
-  constructor(name, type, options) {
-    super(name, type, options);
-
-    this.nextMoveTime = GameData.tickTime > 0 ? GameData.tickTime -
-      GameData.tickTime % this.moveInterval + 2 * this.moveInterval : this.moveInterval;
-  }
-
   processOptions(options) {
     super.processOptions(options);
-    this.moveInterval = options.moveInterval;
     this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
   }
 
@@ -30,22 +22,6 @@ class Enemy extends Entity {
   attackEntity(target) {
     super.attackEntity(target);
     if (target.isAlive && target.type === EntityType.Player) { target.kill(); }
-  }
-
-  // Called each frame with delta time in milliseconds
-  onUpdate(deltaTime) {
-    super.onUpdate(deltaTime);
-
-    if (this.canMove === true && this.moveInterval > 0 && this.isEnabled === true) {
-      if (GameData.tickTime >= this.nextMoveTime) {
-        this.nextMoveTime += this.moveInterval;
-        this.onMoveTime();
-      }
-    }
-  }
-
-  onMoveTime() {
-    // Do nothing, extending classes will add behaviour
   }
 }
 
