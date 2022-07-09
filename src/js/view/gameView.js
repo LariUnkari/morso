@@ -22,7 +22,7 @@ class GameView extends PIXI.Container {
     this.addChild(GameData.map, GameData.player);
   }
 
-  startGame() {
+  startRound(stage) {
     GameData.map.generate();
     GameData.map.visible = true;
 
@@ -51,26 +51,26 @@ class GameView extends PIXI.Container {
       monster.enable();
 
       GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, monster);
-
-      GameData.isGameOn = true;
     }
+
+    GameData.isGameOn = true;
   }
 
-  quitGame() {
+  clearRound() {
     GameData.map.clear();
-    GameData.map.visible = false;
-    GameData.player.disable();
-    GameData.player.visible = false;
+
     for (let i = 0; i < GameData.enemies.length; i++) {
-      this.removeChild(GameData.enemies[i]);
+      GameData.enemies[i].destroy({children:true});
     }
 
-    GameData.isGameFinished = false;
     GameData.enemies = [];
     GameData.gameTime = 0;
     GameData.tickTime = 0;
-    GameData.kills = 0;
-    GameData.score = 0;
+  }
+
+  endGame() {
+    this.clearRound();
+    GameData.map.visible = false;
   }
 
   // Called each frame with delta time in milliseconds

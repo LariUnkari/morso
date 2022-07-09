@@ -2,6 +2,10 @@ import { EntityType, EntityIds } from "./entities/entityType.js";
 
 class GameConfiguration {
   constructor() {
+    this.rounds = {
+      roundsPerLevel: 5
+    };
+
     this.entities = { enemyLimit:32 };
     this.entities[EntityIds[EntityType.Player]] = {
       spriteName: "entity_player",

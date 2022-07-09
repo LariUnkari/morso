@@ -1,3 +1,5 @@
+import { Stage } from "./utility/stage.js";
+
 class GameData {
   constructor() {
     this.resources = null;
@@ -7,13 +9,16 @@ class GameData {
     this.kills = 0;
     this.score = 0;
     this.isGameOn = false;
-    this.isGameFinished = false;
+    this.isRoundActive = false;
     this.gameTime = 0;
     this.tickTime = 0;
+    this.stage = new Stage(0, 0);
   }
 
   getEnemyCount(onlyLiving) {
-    return this.enemies.length - (onlyLiving ? this.kills : 0);
+    let count = 0;
+    this.enemies.forEach((enemy)=>{ if (enemy.isAlive || !onlyLiving) { count++; }});
+    return count;
   }
 
   getAllEntities() {

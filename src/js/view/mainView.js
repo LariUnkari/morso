@@ -3,11 +3,15 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { GameView } from "./gameView.js";
+import { Stage } from "../utility/stage.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 
 class MainView extends PIXI.Container {
   constructor(resources) {
     super();
+
+    this.startRoundCount = 0;
+    this.startRoundTimer = 0;
 
     this.frame = new PIXI.Container();
     this.frameOuter = new PIXI.Graphics();
@@ -29,13 +33,18 @@ class MainView extends PIXI.Container {
     this.startButton.buttonMode = true;
     this.startButton.on("click", this.onClickStart.bind(this));
 
-    this.quitButton = new PIXI.Text("QUIT", GameConfiguration.styles.button.decline);
-    this.quitButton.interactive = true;
-    this.quitButton.buttonMode = true;
-    this.quitButton.on("click", this.onClickQuit.bind(this));
-    this.quitButton.visible = false;
+    this.endButton = new PIXI.Text("QUIT", GameConfiguration.styles.button.decline);
+    this.endButton.interactive = true;
+    this.endButton.buttonMode = true;
+    this.endButton.on("click", this.onClickEnd.bind(this));
+    this.endButton.visible = false;
 
-    this.gameScore = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
+    this.scoreText = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
+    this.stageText = new PIXI.Text("STAGE: 0", GameConfiguration.styles.text.generic);
+
+    this.countdown = new PIXI.Text("3", GameConfiguration.styles.text.generic);
+    this.countdown.anchor.set(0.5);
+    this.countdown.visible = false;
 
     this.gameResult = new PIXI.Container();
     this.gameResultShadow = new PIXI.Sprite(PIXI.Texture.from("blob"));
@@ -55,13 +64,69 @@ class MainView extends PIXI.Container {
       this.gameResultDescription);
     this.gameResult.visible = false;
 
-    this.addChild(this.frame, this.gameView, this.gameScore, this.startButton,
-      this.quitButton, this.gameResult);
+    this.addChild(this.frame, this.gameView, this.stageText, this.scoreText, this.startButton,
+      this.endButton, this.gameResult, this.countdown);
 
     GameEventHandler.on(GameEvent.PLAYER_DIED, this.onPlayerDied.bind(this));
     GameEventHandler.on(GameEvent.ENEMY_SPAWNED, this.onEnemySpawned.bind(this));
     GameEventHandler.on(GameEvent.ENEMY_DIED, this.onEnemyDied.bind(this));
-    GameEventHandler.on(GameEvent.GAME_ENDED, this.onGameEnded.bind(this));
+  }
+
+  setStage(stage) {
+    this.stageText.text = "STAGE: " + stage.toString();
+  }
+
+  startGame() {
+    GameData.stage = new Stage(1, 1);
+    GameData.isGameOn = true;
+    GameData.player.revive();
+
+    this.startButton.visible = false;
+    this.endButton.visible = true;
+
+    this.setStage(GameData.stage);
+    this.startNextRoundCountdown();
+  }
+
+  advanceToNextRound() {
+    if (GameData.stage.round < GameConfiguration.rounds.roundsPerLevel) {
+      GameData.stage.round++;
+    } else {
+      GameData.stage.level++;
+      GameData.stage.round = 1;
+    }
+  }
+
+  startRound() {
+    GameData.isRoundActive = true;
+    this.setStage(GameData.stage);
+    this.gameView.startRound();
+    this.countdown.visible = false;
+    this.gameResult.visible = false;
+    GameEventHandler.emit(GameEvent.ROUND_STARTED);
+  }
+
+  endRound(isWin) {
+    GameData.player.disable();
+    GameData.isRoundActive = false;
+    this.gameView.clearRound();
+    GameEventHandler.emit(GameEvent.ROUND_ENDED);
+  }
+
+  endGame() {
+    this.endButton.visible = false;
+    this.startButton.visible = true;
+
+    if (GameData.isRoundActive) {
+      this.endRound(false);
+    }
+
+    GameData.kills = 0;
+    GameData.score = 0;
+    GameData.player.visible = false;
+
+    this.gameView.endGame();
+    this.onGameEnded();
   }
 
   // Called each frame with delta time in milliseconds
@@ -70,28 +135,43 @@ class MainView extends PIXI.Container {
 
     if (GameData.isGameOn === false) { return; }
 
+    if (GameData.isRoundActive === false) {
+      if (this.startRoundTimer > 0) {
+        this.startRoundTimer -= deltaTime;
+
+        if (Math.floor(this.startRoundTimer / 1000) < this.startRoundCount) {
+
+          this.showCountdown();
+          this.startRoundCount--;
+        }
+      } else if (GameData.player.isAlive) {
+          this.startRound();
+      }
+
+      return;
+    }
+
     if (this.checkGameEnded()) {
-      GameData.isGameFinished = true;
-      GameEventHandler.emit(GameEvent.GAME_ENDED);
+      this.endRound(false);
+      this.showRoundResult(false);
+    } else if (this.checkRoundVictory()) {
+      this.endRound(true);
+      this.showRoundResult(true);
+      this.advanceToNextRound();
+      this.startNextRoundCountdown();
     }
   }
 
   onClickStart() {
-    this.gameView.startGame();
-    this.startButton.visible = false;
-    this.quitButton.visible = true;
+    this.startGame();
   }
 
-  onClickQuit() {
-    this.gameView.quitGame();
-    this.quitButton.visible = false;
-    this.startButton.visible = true;
-    this.onGameEnded();
+  onClickEnd() {
+    this.endGame();
   }
 
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
-    GameData.isGameFinished = true;
   }
 
   onEnemySpawned(spawnedEnemy) {
@@ -103,7 +183,7 @@ class MainView extends PIXI.Container {
   onEnemyDied(deadEnemy) {
     GameData.kills += 1;
     GameData.score += deadEnemy.killScore;
-    this.gameScore.text = "SCORE: " + GameData.score;
+    this.scoreText.text = "SCORE: " + GameData.score;
   }
 
   onGameEnded() {
@@ -113,25 +193,39 @@ class MainView extends PIXI.Container {
     GameData.player.disable();
 
     if (!GameData.isGameFinished) { return; }
-
-    if (GameData.player.isAlive === false) {
-      this.showGameResult(false, "YOU ARE DEAD", "YOU WERE EATEN BY A MORSO");
-    } else {
-      this.showGameResult(true, "VICTORY", "YOU SURVIVED ALL OF THE MORSO");
-    }
   }
 
   checkGameEnded() {
-    if (GameData.player.isAlive === false) { return true; }
+    return GameData.player.isAlive === false;
+  }
 
-    for (let enemy of GameData.enemies) {
-      if (enemy.isAlive === true) { return false; }
+  checkRoundVictory() {
+    if (GameData.getEnemyCount(true) > 0) {
+       return false;
     }
 
     return true;
   }
 
-  showGameResult(isWin, title, description) {
+  startNextRoundCountdown() {
+    this.startRoundTimer = 4000;
+    this.startRoundCount = 3;
+  }
+
+  showCountdown() {
+    this.countdown.visible = true;
+    this.countdown.text = this.startRoundCount;
+  }
+
+  showRoundResult(isWin) {
+      if (isWin) {
+        this.showResultPopup(true, "VICTORY", "YOU SURVIVED. NOW PREPARE FOR MORE");
+      } else {
+        this.showResultPopup(false, "YOU ARE DEAD", "YOU EATEN ONE TOO MANY TIMES");
+      }
+  }
+
+  showResultPopup(isWin, title, description) {
     this.gameResultTitle.text = title;
     this.gameResultTitle.x = -Math.floor(this.gameResultTitle.width / 2);
     this.gameResultDescription.text = description;
@@ -166,13 +260,15 @@ class MainView extends PIXI.Container {
     this.startButton.position.set(
       Math.floor((actualWidth - this.startButton.width) / 2),
       actualHeight + 20 + 4);
-    this.quitButton.position.set(
-      actualWidth - this.quitButton.width - 12 - 4, actualHeight + 20 + 4);
-    this.gameScore.position.set(20, actualHeight + 20 + 4);
+    this.endButton.position.set(
+      actualWidth - this.endButton.width - 12 - 4, actualHeight + 20 + 4);
+    this.stageText.position.set(20, actualHeight + 20 + 4);
+    this.scoreText.position.set(20, actualHeight + 40 + 20 + 4);
     this.gameResult.position.set(
       Math.floor(actualWidth / 2),
       Math.floor(actualHeight / 2) + 4);
 
+    this.countdown.position.set(Math.floor(canvasWidth / 2), actualHeight - 200);
   }
 }
 
