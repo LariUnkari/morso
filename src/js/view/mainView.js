@@ -1,13 +1,9 @@
+import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { GameView } from "./gameView.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
-
-const STYLE_TEXT_GENERIC = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
-const STYLE_BUTTON_QUIT = { fontFamily:"Arial", fontSize:32, fill:0xFF0000 };
-const STYLE_TEXT_RESULT_TITLE = { fontFamily:"Arial", fontSize:96, fill:0xFFFFFF };
-const STYLE_TEXT_RESULT_DESCRIPTION = { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF };
 
 class MainView extends PIXI.Container {
   constructor(resources) {
@@ -28,25 +24,25 @@ class MainView extends PIXI.Container {
     this.gameView = new GameView(resources);
     this.gameView.position.set(4, 4);
 
-    this.startButton = new PIXI.Text("START", STYLE_TEXT_GENERIC);
+    this.startButton = new PIXI.Text("START", GameConfiguration.styles.text.generic);
     this.startButton.interactive = true;
     this.startButton.buttonMode = true;
     this.startButton.on("click", this.onClickStart.bind(this));
 
-    this.quitButton = new PIXI.Text("QUIT", STYLE_BUTTON_QUIT);
+    this.quitButton = new PIXI.Text("QUIT", GameConfiguration.styles.button.decline);
     this.quitButton.interactive = true;
     this.quitButton.buttonMode = true;
     this.quitButton.on("click", this.onClickQuit.bind(this));
     this.quitButton.visible = false;
 
-    this.gameScore = new PIXI.Text("SCORE: 0", STYLE_TEXT_GENERIC);
+    this.gameScore = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
 
     this.gameResult = new PIXI.Container();
     this.gameResultShadow = new PIXI.Sprite(PIXI.Texture.from("blob"));
     this.gameResultShadow.anchor.set(0.5);
     this.gameResultShadow.tint = 0x000000;
-    this.gameResultTitle = new PIXI.Text("TITLE", STYLE_TEXT_RESULT_TITLE);
-    this.gameResultDescription = new PIXI.Text("DESCRIPTION", STYLE_TEXT_RESULT_DESCRIPTION);
+    this.gameResultTitle = new PIXI.Text("TITLE", GameConfiguration.styles.text.resultTitle);
+    this.gameResultDescription = new PIXI.Text("DESCRIPTION", GameConfiguration.styles.text.resultDescription);
 
     this.gameResultTitle.position.set(
       -Math.floor(this.gameResultTitle.width / 2),

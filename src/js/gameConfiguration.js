@@ -32,6 +32,18 @@ class GameConfiguration {
       killScore: 100,
       stuckMemoryDuration:7
     };
+
+    this.styles = {
+      text: {
+        generic:{ fontFamily:"Arial", fontSize:32, fill:0xFFFFFF },
+        resultTitle:{ fontFamily:"Arial", fontSize:96, fill:0xFFFFFF },
+        resultDescription:{ fontFamily:"Arial", fontSize:32, fill:0xFFFFFF }
+      },
+      button: {
+        confirm:{ fontFamily:"Arial", fontSize:32, fill:0xFF0000 },
+        decline:{ fontFamily:"Arial", fontSize:32, fill:0xFF0000 }
+      }
+    };
   }
 }
 

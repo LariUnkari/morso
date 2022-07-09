@@ -30,7 +30,7 @@ const main = () => {
             .add("tile_wall", "assets/tile_wall.png");
 
   app.loader.load((loader, resources) => {
-    game.start(resources);
+    game.init(resources);
   });
 };
 

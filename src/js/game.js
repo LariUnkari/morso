@@ -12,7 +12,7 @@ class Game {
     this.onWindowResize();
   }
 
-  start(resources) {
+  init(resources) {
     GameData.resources = resources;
 
     this.mainView = new MainView(resources);
