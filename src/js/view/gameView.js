@@ -1,3 +1,4 @@
+import MathUtil from "../utility/mathUtil.js";
 import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
@@ -23,19 +24,33 @@ class GameView extends PIXI.Container {
   }
 
   startRound(stage) {
-    GameData.map.generate();
+    const roundCount =
+     (stage.level - 1) * GameConfiguration.rounds.roundsPerLevel + stage.round;
+    const wallRatio = MathUtil.getValueInRangeAt(
+      GameConfiguration.map.getWallRatioMultiplier(roundCount),
+      GameConfiguration.map.wallRatioRange);
+
+    GameData.map.generate(wallRatio);
     GameData.map.visible = true;
 
     this.spawnPlayer();
 
-    let x, y, type;
-    const enemyCount = 2 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < enemyCount; i++) {
-      x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
-      y = Math.floor((i + 1) * GameData.map.grid.height / (enemyCount + 1));
+    const enemyTypes = [EntityType.MonsterEgg, EntityType.MonsterSmall, EntityType.MonsterBig];
+    const enemyConfig = GameConfiguration.getRoundEnemyConfig(enemyTypes, roundCount);
+    let enemiesSpawned = 0;
 
-      type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
-      this.spawnMonster("Monster" + i, type, new Coordinate(x, y));
+    let x, y, set;
+    for (let i = 0; i < enemyTypes.length; i++) {
+      set = enemyConfig.sets[EntityIds[enemyTypes[i]]];
+
+      for (let j = 0; j < set.count; j++) {
+        enemiesSpawned++;
+
+        x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
+        y = Math.floor(enemiesSpawned * GameData.map.grid.height / (enemyConfig.totalCount + 1));
+
+        this.spawnMonster("Monster" + enemiesSpawned, set.type, new Coordinate(x, y));
+      }
     }
 
     GameData.isGameOn = true;

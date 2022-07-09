@@ -1,8 +1,8 @@
+import MathUtil from "../utility/mathUtil.js";
 import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
 import { TileType } from "../map/tileType.js";
 import { EntityType } from "../entities/entityType.js";
-import { MathUtil } from "../utility/mathUtil.js";
 
 class Entity extends PIXI.Container {
   constructor(name, type, options) {

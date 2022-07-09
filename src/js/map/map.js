@@ -1,23 +1,20 @@
+import MathUtil from "../utility/mathUtil.js";
 import { Coordinate } from "./coordinate.js";
 import { Tile } from "./tile.js";
 import { TileType } from "./tileType.js";
 
 const GRID_SCALE = 32;
-const WALL_RATIO_RANGE = { min:0.1, max:0.4 };
 
 class Map extends PIXI.Container {
-  constructor(width, height, wall_ratio) {
+  constructor(width, height) {
     super();
 
     this.grid = { width, height };
     this.dimensions = { width:width*GRID_SCALE, height:height*GRID_SCALE };
-    this.wall_ratio = wall_ratio === undefined || Number.isNaN(wall_ratio) ?
-      this.getRandomWallRatio() : this.getConstrainedWallRatio(wall_ratio);
 
     console.log("Creating map of dimensions " + this.grid.width + "x" +
       this.grid.height + " on scale " + GRID_SCALE + ", dimensions " +
-      this.dimensions.width + "x" + this.dimensions.height + ", wall ratio: " +
-      this.wall_ratio);
+      this.dimensions.width + "x" + this.dimensions.height);
 
     this.gridContainer = new PIXI.Container();
     this.gridContainer.position.set(
@@ -45,15 +42,19 @@ class Map extends PIXI.Container {
     this.occupiedTiles = {};
   }
 
-  generate() {
+  generate(wallRatio) {
+    this.wallRatio = wallRatio && !Number.isNaN(wallRatio) ? wallRatio :
+      MathUtil.getRandomValueInRangeFloat(GameConfiguration.map.wallRatioRange);
+
     for (let x = 0; x < this.grid.width; x++) {
       for (let y = 0; y < this.grid.height; y++) {
-        this.tiles[x][y].setType(this.getRandomTileType());
+        this.tiles[x][y].setType(this.getRandomTileType(this.wallRatio));
       }
     }
   }
 
   clear() {
+    this.wallRatio = 0;
     this.occupiedTiles = {};
     
     for (let x = 0; x < this.grid.width; x++) {
@@ -127,20 +128,8 @@ class Map extends PIXI.Container {
     return this.tiles[coordinate.x][coordinate.y];
   }
 
-  getConstrainedWallRatio(input) {
-    console.log("Getting constrained wall ratio from " + input);
-    return Math.min(Math.max(input, WALL_RATIO_RANGE.min), WALL_RATIO_RANGE.max);
-  }
-
-  getRandomWallRatio() {
-    console.log("Getting random wall ratio between " + WALL_RATIO_RANGE.min +
-      " and " + WALL_RATIO_RANGE.max);
-    return WALL_RATIO_RANGE.min +
-      Math.random() * (WALL_RATIO_RANGE.max - WALL_RATIO_RANGE.min);
-  }
-
-  getRandomTileType() {
-    return Math.random() < this.wall_ratio ? TileType.Wall : TileType.Floor;
+  getRandomTileType(wallRatio) {
+    return Math.random() < wallRatio ? TileType.Wall : TileType.Floor;
   }
 }
 

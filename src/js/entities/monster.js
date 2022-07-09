@@ -1,3 +1,4 @@
+import MathUtil from "../utility/mathUtil.js";
 import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
@@ -5,7 +6,6 @@ import { GameEvent } from "../gameEvent.js";
 import { Enemy } from "./enemy.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
-import { MathUtil } from "../utility/mathUtil.js";
 
 class Monster extends Enemy {
   constructor(name, type, options) {

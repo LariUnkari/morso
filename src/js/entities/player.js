@@ -1,3 +1,4 @@
+import MathUtil from "../utility/mathUtil.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import InputHandler from "../input/inputHandler.js";
@@ -5,7 +6,6 @@ import { GameEvent } from "../gameEvent.js";
 import { Entity } from "./entity.js";
 import { EntityType } from "../entities/entityType.js";
 import { Direction } from "../map/direction.js";
-import { MathUtil } from "../utility/mathUtil.js";
 
 class Player extends Entity {
   constructor(name, type, options) {

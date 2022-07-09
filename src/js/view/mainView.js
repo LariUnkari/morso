@@ -129,7 +129,7 @@ class MainView extends PIXI.Container {
 
     this.setStage(GameData.stage);
 
-    this.gameView.startRound();
+    this.gameView.startRound(GameData.stage);
     this.countdown.visible = false;
     this.gameResult.visible = false;
 
