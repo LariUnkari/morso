@@ -2,6 +2,13 @@ import { EntityType, EntityIds } from "./entities/entityType.js";
 
 class GameConfiguration {
   constructor() {
+    this.player = {
+      initialLives: 2,
+      getExtraLifeScore:(extraLifeIndex) => {
+         return 1000 * (1 + Math.floor(Math.pow(extraLifeIndex + 1, 3) / 4));
+      }
+    };
+    
     this.rounds = {
       roundsPerLevel: 5
     };

@@ -41,6 +41,8 @@ class MainView extends PIXI.Container {
 
     this.scoreText = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
     this.stageText = new PIXI.Text("STAGE: 0", GameConfiguration.styles.text.generic);
+    this.livesRemainingText = new PIXI.Text("LIVES: 0", GameConfiguration.styles.text.generic);
+    this.extraLifeScoreText = new PIXI.Text("+1 LIFE: 0", GameConfiguration.styles.text.generic);
 
     this.countdown = new PIXI.Text("3", GameConfiguration.styles.text.generic);
     this.countdown.anchor.set(0.5);
@@ -64,27 +66,51 @@ class MainView extends PIXI.Container {
       this.gameResultDescription);
     this.gameResult.visible = false;
 
-    this.addChild(this.frame, this.gameView, this.stageText, this.scoreText, this.startButton,
+    this.addChild(this.frame, this.gameView, this.stageText, this.scoreText,
+      this.livesRemainingText, this.extraLifeScoreText, this.startButton,
       this.endButton, this.gameResult, this.countdown);
 
-    GameEventHandler.on(GameEvent.PLAYER_DIED, this.onPlayerDied.bind(this));
-    GameEventHandler.on(GameEvent.ENEMY_SPAWNED, this.onEnemySpawned.bind(this));
-    GameEventHandler.on(GameEvent.ENEMY_DIED, this.onEnemyDied.bind(this));
+    GameEventHandler.on(GameEvent.PLAYER_DIED, (instigator)=>this.onPlayerDied(instigator));
+    GameEventHandler.on(GameEvent.ENEMY_SPAWNED, (enemy)=>this.onEnemySpawned(enemy));
+    GameEventHandler.on(GameEvent.ENEMY_DIED, (args)=>this.onEnemyDied(args[0], args[1]));
   }
 
   setStage(stage) {
     this.stageText.text = "STAGE: " + stage.toString();
   }
 
+  setScore(amount) {
+    this.scoreText.text = "SCORE: " + amount;
+  }
+
+  setLives(remaining) {
+    this.livesRemainingText.text = "LIVES: " + remaining;
+  }
+
+  setExtraLifeScore(score) {
+    this.extraLifeScoreText.text = "+1 LIFE: " + score;
+  }
+
   startGame() {
+    GameData.player.revive();
     GameData.stage = new Stage(1, 1);
     GameData.isGameOn = true;
-    GameData.player.revive();
+    GameData.kills = 0;
+    GameData.score = 0;
+    GameData.livesRemaining = GameConfiguration.player.initialLives;
+    GameData.extraLifeScore = GameConfiguration.player.getExtraLifeScore(0);
+    GameData.extraLivesGiven = 0;
 
+    this.livesRemainingText.visible = true;
+    this.extraLifeScoreText.visible = true;
     this.startButton.visible = false;
     this.endButton.visible = true;
 
     this.setStage(GameData.stage);
+    this.setScore(GameData.score);
+    this.setLives(GameData.livesRemaining);
+    this.setExtraLifeScore(GameData.extraLifeScore);
+
     this.startNextRoundCountdown();
   }
 
@@ -99,31 +125,44 @@ class MainView extends PIXI.Container {
 
   startRound() {
     GameData.isRoundActive = true;
+    GameData.player.visible = true;
+
     this.setStage(GameData.stage);
+
     this.gameView.startRound();
     this.countdown.visible = false;
     this.gameResult.visible = false;
+
     GameEventHandler.emit(GameEvent.ROUND_STARTED);
   }
 
   endRound(isWin) {
+    for (let i = 0; i < GameData.enemies.length; i++) {
+      GameData.enemies[i].destroy({children:true});
+    }
+
+    GameData.enemies = [];
+    GameData.gameTime = 0;
+    GameData.tickTime = 0;
+
     GameData.player.disable();
+    GameData.player.visible = false;
     GameData.isRoundActive = false;
+
     this.gameView.clearRound();
+
     GameEventHandler.emit(GameEvent.ROUND_ENDED);
   }
 
   endGame() {
-    this.endButton.visible = false;
+    this.livesRemainingText.visible = true;
+    this.extraLifeScoreText.visible = true;
     this.startButton.visible = true;
+    this.endButton.visible = false;
 
     if (GameData.isRoundActive) {
       this.endRound(false);
     }
-
-    GameData.kills = 0;
-    GameData.score = 0;
-    GameData.player.visible = false;
 
     this.gameView.endGame();
     this.onGameEnded();
@@ -172,18 +211,25 @@ class MainView extends PIXI.Container {
 
   onPlayerDied(instigator) {
     console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
+    GameData.livesRemaining -= 1;
+    this.setLives(GameData.livesRemaining);
+
+    if (GameData.livesRemaining > 0) {
+      this.gameView.spawnPlayer();
+    }
   }
 
   onEnemySpawned(spawnedEnemy) {
-
       this.gameView.addChild(spawnedEnemy);
       GameData.enemies.push(spawnedEnemy);
   }
 
-  onEnemyDied(deadEnemy) {
+  onEnemyDied(deadEnemy, instigator) {
     GameData.kills += 1;
     GameData.score += deadEnemy.killScore;
-    this.scoreText.text = "SCORE: " + GameData.score;
+
+    this.setScore(GameData.score);
+    if (GameData.score >= GameData.extraLifeScore) { this.giveExtraLife(); }
   }
 
   onGameEnded() {
@@ -196,15 +242,24 @@ class MainView extends PIXI.Container {
   }
 
   checkGameEnded() {
-    return GameData.player.isAlive === false;
+    return GameData.player.isAlive === false && GameData.livesRemaining < 1;
   }
 
   checkRoundVictory() {
-    if (GameData.getEnemyCount(true) > 0) {
+    if (GameData.player.isAlive === false || GameData.getEnemyCount(true) > 0) {
        return false;
     }
 
     return true;
+  }
+
+  giveExtraLife() {
+    GameData.extraLivesGiven += 1;
+    GameData.livesRemaining += 1;
+    GameData.extraLifeScore = GameConfiguration.player.getExtraLifeScore(GameData.extraLivesGiven);
+
+    this.setLives(GameData.livesRemaining);
+    this.setExtraLifeScore(GameData.extraLifeScore);
   }
 
   startNextRoundCountdown() {
@@ -219,9 +274,9 @@ class MainView extends PIXI.Container {
 
   showRoundResult(isWin) {
       if (isWin) {
-        this.showResultPopup(true, "VICTORY", "YOU SURVIVED. NOW PREPARE FOR MORE");
+        this.showResultPopup(true, "VICTORY", "YOU SURVIVED. NOW PREPARE FOR MORE!");
       } else {
-        this.showResultPopup(false, "YOU ARE DEAD", "YOU EATEN ONE TOO MANY TIMES");
+        this.showResultPopup(false, "YOU ARE DEAD", "YOU GOT EATEN ONE TOO MANY TIMES");
       }
   }
 
@@ -262,8 +317,13 @@ class MainView extends PIXI.Container {
       actualHeight + 20 + 4);
     this.endButton.position.set(
       actualWidth - this.endButton.width - 12 - 4, actualHeight + 20 + 4);
+
     this.stageText.position.set(20, actualHeight + 20 + 4);
+    this.livesRemainingText.position.set(300, this.stageText.y);
+
     this.scoreText.position.set(20, actualHeight + 40 + 20 + 4);
+    this.extraLifeScoreText.position.set(300, this.scoreText.y);
+
     this.gameResult.position.set(
       Math.floor(actualWidth / 2),
       Math.floor(actualHeight / 2) + 4);

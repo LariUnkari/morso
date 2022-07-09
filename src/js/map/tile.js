@@ -30,15 +30,20 @@ class Tile extends PIXI.Container {
   }
 
   getTextureForTileType(type) {
+    this.alpha = 0;
+
     if (type === TileType.None) {
       return PIXI.Texture.from("placeholder");
     }
     if (type === TileType.Floor) {
+      this.alpha = 1;
       return PIXI.Texture.from("tile_floor");
     }
     if (type === TileType.Wall) {
+      this.alpha = 1;
       return PIXI.Texture.from("tile_wall");
     }
+
     return null;
   }
 

@@ -57,9 +57,13 @@ class Entity extends PIXI.Container {
 
   kill(instigator) {
     this.isAlive = false;
-    this.sprite.tint = 0x333333;
     this.disable();
     GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
+    this.onDeath(instigator);
+  }
+
+  onDeath(instigator) {
+    this.sprite.tint = 0x333333;
   }
 
   revive() {

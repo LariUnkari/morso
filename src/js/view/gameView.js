@@ -26,31 +26,16 @@ class GameView extends PIXI.Container {
     GameData.map.generate();
     GameData.map.visible = true;
 
-    let startTile = FillSearch.findNearestTileOfType(GameData.map,
-      new Coordinate(5, 10), TileType.Floor);
+    this.spawnPlayer();
 
-    GameData.player.setCoordinate(startTile.coordinate, false, true);
-    GameData.player.visible = true;
-    GameData.player.revive();
-    GameData.player.enable();
-
-    let monster, type, options, x, y;
+    let x, y, type;
     const enemyCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < enemyCount; i++) {
-      type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
-      options = GameConfiguration.entities[EntityIds[type]];
-
-      monster = new Monster("Monster" + (i + 1), type, options);
-
       x = GameData.map.grid.width - 2 - Math.floor(3 * Math.random());
       y = Math.floor((i + 1) * GameData.map.grid.height / (enemyCount + 1));
 
-      startTile = FillSearch.findNearestTileOfType(GameData.map,
-        new Coordinate(x, y), TileType.Floor);
-      monster.setCoordinate(startTile.coordinate, false, true);
-      monster.enable();
-
-      GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, monster);
+      type = i === 0 ? EntityType.MonsterSmall : EntityType.MonsterBig;
+      this.spawnMonster("Monster" + i, type, new Coordinate(x, y));
     }
 
     GameData.isGameOn = true;
@@ -58,19 +43,32 @@ class GameView extends PIXI.Container {
 
   clearRound() {
     GameData.map.clear();
-
-    for (let i = 0; i < GameData.enemies.length; i++) {
-      GameData.enemies[i].destroy({children:true});
-    }
-
-    GameData.enemies = [];
-    GameData.gameTime = 0;
-    GameData.tickTime = 0;
   }
 
   endGame() {
     this.clearRound();
     GameData.map.visible = false;
+  }
+
+  spawnPlayer() {
+    const preferredCoordinate = new Coordinate(5, 10);
+    const startTile = FillSearch.findNearestTileOfType(GameData.map,
+      preferredCoordinate, TileType.Floor);
+
+    GameData.player.setCoordinate(startTile.coordinate, false, true);
+    GameData.player.visible = true;
+    GameData.player.revive();
+    GameData.player.enable();
+  }
+
+  spawnMonster(name, type, preferredCoordinate) {
+    const options = GameConfiguration.entities[EntityIds[type]];
+    const monster = new Monster(name, type, options);
+    const startTile = FillSearch.findNearestTileOfType(GameData.map,
+      preferredCoordinate, TileType.Floor);
+
+    monster.setCoordinate(startTile.coordinate, false, true);
+    monster.enable();
   }
 
   // Called each frame with delta time in milliseconds

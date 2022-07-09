@@ -6,13 +6,16 @@ class GameData {
     this.map = null;
     this.player = null;
     this.enemies = [];
+    this.stage = new Stage(0, 0);
+    this.livesRemaining = 0;
+    this.extraLivesGiven = 0;
+    this.extraLifeScore = 0;
     this.kills = 0;
     this.score = 0;
-    this.isGameOn = false;
-    this.isRoundActive = false;
     this.gameTime = 0;
     this.tickTime = 0;
-    this.stage = new Stage(0, 0);
+    this.isGameOn = false;
+    this.isRoundActive = false;
   }
 
   getEnemyCount(onlyLiving) {

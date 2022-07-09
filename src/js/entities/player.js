@@ -31,6 +31,10 @@ class Player extends Entity {
 
   kill(instigator) {
     super.kill(instigator);
+  }
+
+  onDeath(instigator) {
+    super.onDeath(instigator);
     GameEventHandler.emit(GameEvent.PLAYER_DIED, instigator);
   }
 
