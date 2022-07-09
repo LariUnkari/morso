@@ -210,7 +210,7 @@ class MainView extends PIXI.Container {
   }
 
   onPlayerDied(instigator) {
-    console.log("Player was killed by " + instigator.name + " at " + instigator.coordinate.toString());
+    console.log("Player was killed by " + instigator.entityName + " at " + instigator.coordinate.toString());
     GameData.livesRemaining -= 1;
     this.setLives(GameData.livesRemaining);
 

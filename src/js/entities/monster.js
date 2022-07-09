@@ -38,7 +38,7 @@ class Monster extends Enemy {
 
   changeType(newType) {
     if (!MathUtil.getBitFromMask(EntityType.Enemy, newType)) {
-      console.warn(this.name + ": Can't change from enemy type " + this.type +
+      console.warn(this.entityName + ": Can't change from enemy type " + this.type +
         " '" + EntityIds[this.type] + "' to a non-enemy type " + newType +
         " '" + EntityIds[newType] + "'!");
       return;
@@ -63,7 +63,7 @@ class Monster extends Enemy {
   layEgg(coordinate) {
     this.eggsLayed++;
     const options = GameConfiguration.entities[EntityIds[EntityType.MonsterEgg]];
-    const egg = new Monster(this.name + "-" + this.eggsLayed, EntityType.MonsterEgg, options);
+    const egg = new Monster(this.entityName + "-" + this.eggsLayed, EntityType.MonsterEgg, options);
     egg.setCoordinate(coordinate, false, true);
     egg.enable();
     GameEventHandler.emit(GameEvent.ENEMY_SPAWNED, egg);
@@ -80,7 +80,7 @@ class Monster extends Enemy {
         this.growthTime = hatchTime +
           MathUtil.getRandomValueInRangeInt(this.growthDuration);
         this.nextMoveTime = hatchTime - hatchTime % this.moveInterval + 2 * this.moveInterval;
-        console.log(this.name + ": I hatched!");
+        console.log(this.entityName + ": I hatched!");
       }
     }
     else if (this.type === EntityType.MonsterSmall) {
@@ -88,7 +88,7 @@ class Monster extends Enemy {
         const growthTime = this.growthTime;
         this.changeType(EntityType.MonsterBig);
         this.eggTime = growthTime + MathUtil.getRandomValueInRangeInt(this.eggDuration);
-        console.log(this.name + ": I grew bigger!");
+        console.log(this.entityName + ": I grew bigger!");
       }
     }
   }
@@ -97,7 +97,7 @@ class Monster extends Enemy {
     this.handleStuckMemory();
 
     if (GameData.player === null) {
-      console.warn(this.name + ": Player not found!");
+      console.warn(this.entityName + ": Player not found!");
       return;
     }
 
@@ -111,7 +111,7 @@ class Monster extends Enemy {
 
     if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
       if (!this.tryMove(desiredDirection)) {
-        console.warn(this.name + ": Unable to move to visible direction to " + targetCoordinate.toString());
+        console.warn(this.entityName + ": Unable to move to visible direction to " + targetCoordinate.toString());
       }
       return;
     }
@@ -163,7 +163,7 @@ class Monster extends Enemy {
       if (this.canLayEgg() && GameData.tickTime >= this.eggTime) {
         this.layEgg(leavePosition);
         this.eggTime += MathUtil.getRandomValueInRangeInt(this.eggDuration);
-        console.log(this.name + ": I layed an egg! " + this.eggsLayed + "/" + this.eggLimit + " egg limit");
+        console.log(this.entityName + ": I layed an egg! " + this.eggsLayed + "/" + this.eggLimit + " egg limit");
       }
     }
   }

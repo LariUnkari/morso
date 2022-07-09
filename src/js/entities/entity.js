@@ -8,7 +8,7 @@ class Entity extends PIXI.Container {
   constructor(name, type, options) {
     super();
 
-    this.name = name;
+    this.entityName = name;
     this.type = type;
     this.spriteName = "placeholder";
 

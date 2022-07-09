@@ -88,9 +88,9 @@ class Map extends PIXI.Container {
     if (!previousOccupier) {
       this.occupiedTiles[coordinateId] = occupier;
     } else {
-      console.warn("Unable to set a occupier '" + occupier.name + "' to coordinate '" +
+      console.warn("Unable to set a occupier '" + occupier.entityName + "' to coordinate '" +
         coordinateId + "' " + coordinate.toString() + ", expected undefined, found " +
-        previousOccupier.name);
+        previousOccupier.entityName);
     }
   }
 
@@ -104,8 +104,8 @@ class Map extends PIXI.Container {
       this.occupiedTiles[coordinateId] = undefined;
     } else {
       console.warn("Unable to remove a non-matching occupier from coordinate '" +
-        coordinateId + "' " + coordinate.toString() + ", expected " + occupier.name +
-        ", found " + (previousOccupier ? "'" + previousOccupier.name + "'" : "undefined"));
+        coordinateId + "' " + coordinate.toString() + ", expected " + occupier.entityName +
+        ", found " + (previousOccupier ? "'" + previousOccupier.entityName + "'" : "undefined"));
     }
   }
 
