@@ -1,3 +1,4 @@
+import { gsap, PixiPlugin } from "/lib/gsap/all.js";
 import GameConfiguration from "../gameConfiguration.js";
 import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
@@ -9,6 +10,8 @@ import { EntityType, EntityIds } from "../entities/entityType.js";
 class MainView extends PIXI.Container {
   constructor(resources) {
     super();
+
+    gsap.registerPlugin(PixiPlugin);
 
     this.startRoundCount = 0;
     this.startRoundTimer = 0;
@@ -44,7 +47,7 @@ class MainView extends PIXI.Container {
     this.livesRemainingText = new PIXI.Text("LIVES: 0", GameConfiguration.styles.text.generic);
     this.extraLifeScoreText = new PIXI.Text("+1 LIFE: 0", GameConfiguration.styles.text.generic);
 
-    this.countdown = new PIXI.Text("3", GameConfiguration.styles.text.generic);
+    this.countdown = new PIXI.Text("3", GameConfiguration.styles.text.countdown);
     this.countdown.anchor.set(0.5);
     this.countdown.visible = false;
 
@@ -67,8 +70,8 @@ class MainView extends PIXI.Container {
     this.gameResult.visible = false;
 
     this.addChild(this.frame, this.gameView, this.stageText, this.scoreText,
-      this.livesRemainingText, this.extraLifeScoreText, this.startButton,
-      this.endButton, this.gameResult, this.countdown);
+      this.livesRemainingText, this.extraLifeScoreText, this.startButton, this.endButton,
+      this.gameResult, this.countdown);
 
     GameEventHandler.on(GameEvent.PLAYER_DIED, (instigator)=>this.onPlayerDied(instigator));
     GameEventHandler.on(GameEvent.ENEMY_SPAWNED, (enemy)=>this.onEnemySpawned(enemy));
@@ -180,7 +183,7 @@ class MainView extends PIXI.Container {
 
         if (Math.floor(this.startRoundTimer / 1000) < this.startRoundCount) {
 
-          this.showCountdown();
+          if (this.startRoundCount > 0) { this.showCountdown(); }
           this.startRoundCount--;
         }
       } else if (GameData.player.isAlive) {
@@ -270,6 +273,8 @@ class MainView extends PIXI.Container {
   showCountdown() {
     this.countdown.visible = true;
     this.countdown.text = this.startRoundCount;
+    gsap.fromTo(this.countdown, 0.45, { alpha:0 }, { alpha:1, yoyo:true, repeat:1 });
+    gsap.fromTo(this.countdown, 0.9, { pixi:{scale:0.5} }, { pixi:{scale:1} });
   }
 
   showRoundResult(isWin) {
@@ -314,7 +319,7 @@ class MainView extends PIXI.Container {
 
     this.startButton.position.set(
       Math.floor((actualWidth - this.startButton.width) / 2),
-      actualHeight + 20 + 4);
+      Math.floor((actualHeight - this.startButton.height) / 2));
     this.endButton.position.set(
       actualWidth - this.endButton.width - 12 - 4, actualHeight + 20 + 4);
 

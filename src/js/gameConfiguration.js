@@ -59,6 +59,7 @@ class GameConfiguration {
     this.styles = {
       text: {
         generic: { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF },
+        countdown: { fontFamily:"Arial", fontSize:64, fill:0xFFFFFF },
         resultTitle: { fontFamily:"Arial", fontSize:96, fill:0xFFFFFF },
         resultDescription: { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF }
       },
