@@ -155,8 +155,8 @@ class MainView extends PIXI.Container {
   }
 
   endGame() {
-    this.livesRemainingText.visible = true;
-    this.extraLifeScoreText.visible = true;
+    this.livesRemainingText.visible = false;
+    this.extraLifeScoreText.visible = false;
     this.startButton.visible = true;
     this.endButton.visible = false;
 
