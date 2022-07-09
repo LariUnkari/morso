@@ -29,9 +29,9 @@ class Player extends Entity {
     super.disable();
   }
 
-  kill() {
-    super.kill();
-    GameEventHandler.emit(GameEvent.PLAYER_DIED, this);
+  kill(instigator) {
+    super.kill(instigator);
+    GameEventHandler.emit(GameEvent.PLAYER_DIED, instigator);
   }
 
   canAttackEntity(target) {
@@ -39,7 +39,7 @@ class Player extends Entity {
   }
 
   attackEntity(target) {
-    this.kill();
+    this.kill(target);
   }
 
   onMoveTime() {

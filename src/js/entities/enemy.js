@@ -10,9 +10,9 @@ class Enemy extends Entity {
     this.killScore = Number.isNaN(options.killScore) ? 0 : options.killScore;
   }
 
-  kill() {
-    super.kill();
-    GameEventHandler.emit(GameEvent.ENEMY_DIED, this);
+  kill(instigator) {
+    super.kill(instigator);
+    GameEventHandler.emit(GameEvent.ENEMY_DIED, instigator);
   }
 
   canAttackEntity(target) {
@@ -21,7 +21,7 @@ class Enemy extends Entity {
 
   attackEntity(target) {
     super.attackEntity(target);
-    if (target.isAlive && target.type === EntityType.Player) { target.kill(); }
+    if (target.isAlive && target.type === EntityType.Player) { target.kill(this); }
   }
 }
 

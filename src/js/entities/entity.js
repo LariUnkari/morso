@@ -55,7 +55,7 @@ class Entity extends PIXI.Container {
     this.isEnabled = false;
   }
 
-  kill() {
+  kill(instigator) {
     this.isAlive = false;
     this.sprite.tint = 0x333333;
     this.disable();
@@ -215,7 +215,7 @@ class Entity extends PIXI.Container {
       pushTest.tile.setType(TileType.Wall);
       fromTile.setType(TileType.Floor);
 
-      if (pushTest.entity) { pushTest.entity.kill(); }
+      if (pushTest.entity) { pushTest.entity.kill(this); }
     }
 
     return pushTest.isValid;
@@ -228,6 +228,7 @@ class Entity extends PIXI.Container {
         this.nextMoveTime += this.moveInterval;
         this.onMoveTime();
       }
+      return;
     }
   }
 
