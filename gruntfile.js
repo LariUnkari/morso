@@ -15,7 +15,9 @@ module.exports = function(grunt) {
         files: [
           { expand:false, src:'src/index.html', dest:'build/index.html' },
           { expand:true, cwd:'src/js', src:['**'], dest:'build/js' },
-          { expand:true, cwd:'src/assets/exported', src:['**'], dest:'build/assets' },
+          { expand:true, cwd:'src/css', src:['**'], dest:'build/css' },
+          { expand:true, cwd:'src/assets/fonts', src:['**'], dest:'build/assets/fonts' },
+          { expand:true, cwd:'src/assets/sprites/exported', src:['**'], dest:'build/assets/sprites' },
           { expand:true, cwd:'node_modules/gsap/', src:['*.js', 'utils/*'], dest:'build/lib/gsap' },
           { expand:true, cwd:'node_modules/events-es6', src:'events-es6.js', dest:'build/lib' },
           { expand:true, cwd:'node_modules/pixi.js/dist/browser', src:[
