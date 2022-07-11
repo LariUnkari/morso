@@ -58,14 +58,14 @@ class GameConfiguration {
 
     this.styles = {
       text: {
-        generic: { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF },
-        countdown: { fontFamily:"Arial", fontSize:64, fill:0xFFFFFF },
-        resultTitle: { fontFamily:"Arial", fontSize:96, fill:0xFFFFFF },
-        resultDescription: { fontFamily:"Arial", fontSize:32, fill:0xFFFFFF }
+        generic: { fontFamily:"Minecraft", fontSize:32, fill:0xFFFFFF },
+        countdown: { fontFamily:"Minecraft", fontSize:64, fill:0xFFFFFF },
+        resultTitle: { fontFamily:"Minecraft", fontSize:96, fill:0xFFFFFF },
+        resultDescription: { fontFamily:"Minecraft", fontSize:32, fill:0xFFFFFF }
       },
       button: {
-        confirm: { fontFamily:"Arial", fontSize:32, fill:0xFF0000 },
-        decline: { fontFamily:"Arial", fontSize:32, fill:0xFF0000 }
+        confirm: { fontFamily:"Minecraft", fontSize:32, fill:0xFF0000 },
+        decline: { fontFamily:"Minecraft", fontSize:32, fill:0xFF0000 }
       }
     };
   }
