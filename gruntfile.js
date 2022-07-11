@@ -20,7 +20,8 @@ module.exports = function(grunt) {
           { expand:true, cwd:'node_modules/events-es6', src:'events-es6.js', dest:'build/lib' },
           { expand:true, cwd:'node_modules/pixi.js/dist/browser', src:[
             'pixi.js', 'pixi.js.map' ], dest:'build/lib/pixi' },
-          { expand:true, cwd:'node_modules/requirejs/bin', src:'r.js', dest:'build/lib' }
+          { expand:true, cwd:'node_modules/webfontloader/', src:[
+            'webfontloader.js' ], dest:'build/lib/webfont' }
         ]
       }
     }

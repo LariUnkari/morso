@@ -12,7 +12,7 @@
     "grunt-contrib-jshint": "~3.2.0",
     "gsap": "~3.10.4",
     "pixi.js": "~6.4.2",
-    "requirejs": "~2.3.6"
+    "webfontloader": "^1.6.28"
   },
   "main": "gruntfile.js",
   "scripts": {
