@@ -1,6 +1,14 @@
 import { Game } from "./game.js";
 
 const main = () => {
+  // Load fonts first
+  window.WebFont.load({
+    custom: { families: ['Minecraft'], urls: ['/css/fonts.css'] },
+    active: start
+  });
+};
+
+const start = () => {
   // The application will create a renderer using WebGL, if possible,
   // with a fallback to a canvas render. It will also setup the ticker
   // and the root stage PIXI.Container
