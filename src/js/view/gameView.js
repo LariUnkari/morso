@@ -4,7 +4,7 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "../map/coordinate.js";
-import { Map } from "../map/map.js";
+import { GridMap } from "../map/gridMap.js";
 import { TileType } from "../map/tileType.js";
 import { Player } from "../entities/player.js";
 import { Monster } from "../entities/monster.js";
@@ -18,7 +18,9 @@ class GameView extends PIXI.Container {
     GameData.player = new Player("Player", EntityType.Player,
       GameConfiguration.entities[EntityIds[EntityType.Player]]);
     GameData.player.visible = false;
-    GameData.map = new Map(40, 21, undefined);
+    GameEventHandler.emit(GameEvent.ENTITY_SPAWNED, GameData.player);
+
+    GameData.map = new GridMap(40, 21, undefined);
     GameData.map.visible = false;
     this.addChild(GameData.map, GameData.player);
   }
@@ -33,7 +35,7 @@ class GameView extends PIXI.Container {
     GameData.map.generate(wallRatio);
     GameData.map.visible = true;
 
-    this.spawnPlayer();
+    this.reSpawnPlayer();
 
     const enemyTypes = [EntityType.MonsterEgg, EntityType.MonsterSmall, EntityType.MonsterBig];
     const enemyConfig = GameConfiguration.getRoundEnemyConfig(enemyTypes, roundCount);
@@ -65,7 +67,7 @@ class GameView extends PIXI.Container {
     GameData.map.visible = false;
   }
 
-  spawnPlayer() {
+  reSpawnPlayer() {
     const preferredCoordinate = new Coordinate(5, 10);
     const startTile = FillSearch.findNearestTileOfType(GameData.map,
       preferredCoordinate, TileType.Floor);
@@ -81,6 +83,8 @@ class GameView extends PIXI.Container {
     const monster = new Monster(name, type, options);
     const startTile = FillSearch.findNearestTileOfType(GameData.map,
       preferredCoordinate, TileType.Floor);
+
+    GameEventHandler.emit(GameEvent.ENTITY_SPAWNED, monster);
 
     monster.setCoordinate(startTile.coordinate, false, true);
     monster.enable();

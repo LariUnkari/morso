@@ -218,7 +218,7 @@ class MainView extends PIXI.Container {
     this.setLives(GameData.livesRemaining);
 
     if (GameData.livesRemaining > 0) {
-      this.gameView.spawnPlayer();
+      this.gameView.reSpawnPlayer();
     }
   }
 

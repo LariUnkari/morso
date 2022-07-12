@@ -1,11 +1,13 @@
 import MathUtil from "../utility/mathUtil.js";
+import GameEventHandler from "../gameEventHandler.js";
+import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "./coordinate.js";
 import { Tile } from "./tile.js";
 import { TileType } from "./tileType.js";
 
 const GRID_SCALE = 32;
 
-class Map extends PIXI.Container {
+class GridMap extends PIXI.Container {
   constructor(width, height) {
     super();
 
@@ -19,7 +21,6 @@ class Map extends PIXI.Container {
     this.gridContainer = new PIXI.Container();
     this.gridContainer.position.set(
       Math.floor(0.5 * GRID_SCALE), Math.floor(0.5 * GRID_SCALE));
-    this.addChild(this.gridContainer);
 
     let coordinate, id, newTile, gridPos;
     this.tiles = [];
@@ -39,7 +40,15 @@ class Map extends PIXI.Container {
       }
     }
 
+    this.corpseContainer = new PIXI.Container();
+    this.entityContainer = new PIXI.Container();
+
+    this.addChild(this.gridContainer, this.corpseContainer, this.entityContainer);
+
     this.occupiedTiles = {};
+
+    GameEventHandler.on(GameEvent.ENTITY_SPAWNED, (entity)=>this.onEntitySpawned(entity));
+    GameEventHandler.on(GameEvent.ENEMY_DIED, (args)=>this.onEnemyDied(args[0], args[1]));
   }
 
   generate(wallRatio) {
@@ -56,12 +65,20 @@ class Map extends PIXI.Container {
   clear() {
     this.wallRatio = 0;
     this.occupiedTiles = {};
-    
+
     for (let x = 0; x < this.grid.width; x++) {
       for (let y = 0; y < this.grid.height; y++) {
         this.tiles[x][y].setType(TileType.None);
       }
     }
+  }
+
+  onEntitySpawned(entity) {
+    entity.setParent(this.entityContainer);
+  }
+
+  onEnemyDied(enemy, instigator) {
+    enemy.setParent(this.corpseContainer);
   }
 
   isCoordinateOutOfBounds(coordinate) {
@@ -133,4 +150,4 @@ class Map extends PIXI.Container {
   }
 }
 
-export { Map };
+export { GridMap };
