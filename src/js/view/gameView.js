@@ -76,6 +76,7 @@ class GameView extends PIXI.Container {
     GameData.player.visible = true;
     GameData.player.revive();
     GameData.player.enable();
+    GameData.player.giveInvulnerability(GameConfiguration.player.spawnInvulnerability);
   }
 
   spawnMonster(name, type, preferredCoordinate) {

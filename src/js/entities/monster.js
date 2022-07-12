@@ -112,33 +112,39 @@ class Monster extends Enemy {
 
     if (directions.length === 0) { return; }
     if (directions.length === 1) {
-      this.move(directions[0]);
+      this.moveAndAttack(directions[0].direction, directions[0].entity);
       return;
     }
 
     const dirIndex = Math.floor(directions.length * Math.random());
-    this.move(directions[dirIndex]);
+    this.moveAndAttack(directions[dirIndex].direction, directions[dirIndex].entity);
   }
 
   getMoveDirections() {
     let desiredDirection = this.getBestDirectionToPlayer();
     let targetCoordinate = this.coordinate.plus(desiredDirection);
+    let moveTest;
 
     if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
-      if (!this.tryMove(desiredDirection)) {
+      moveTest = this.checkMove(desiredDirection);
+
+      if (moveTest.isValid) {
+        return [{direction:desiredDirection, entity:moveTest.entity}];
+      }
+
+      if (!moveTest.entity) {
         console.warn(this.entityName + ": Unable to move to visible direction to " +
           targetCoordinate.toString());
       }
+
       return [];
     }
-
-    let moveTest;
 
     if (this.checkWasStuckAt(targetCoordinate)) {
       desiredDirection = null;
     } else {
       moveTest = this.checkMove(desiredDirection);
-      if (moveTest.isValid) { return [desiredDirection]; }
+      if (moveTest.isValid) { return [{direction:desiredDirection, entity:moveTest.entity}]; }
     }
 
     const directions = [];
@@ -149,11 +155,13 @@ class Monster extends Enemy {
       if (!desiredDirection || desiredDirection.equals(dir)) { continue; }
 
       moveTest = this.checkMove(dir);
-      targetCoordinate = this.coordinate.plus(dir);
 
       if (moveTest.isValid) {
         validDirs++;
-        if (!this.checkWasStuckAt(targetCoordinate)) { directions.push(dir); }
+        targetCoordinate = this.coordinate.plus(dir);
+        if (!this.checkWasStuckAt(targetCoordinate)) {
+          directions.push({direction:dir, entity:moveTest.entity});
+        }
       }
     }
 

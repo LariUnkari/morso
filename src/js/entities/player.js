@@ -39,7 +39,8 @@ class Player extends Entity {
   }
 
   canAttackEntity(target) {
-    return MathUtil.getBitFromMask(EntityType.Enemy, target.type);
+    return super.canAttackEntity(target) && target.type !== EntityType.MonsterEgg &&
+      MathUtil.getBitFromMask(EntityType.Enemy, target.type);
   }
 
   attackEntity(target) {

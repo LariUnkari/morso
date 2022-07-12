@@ -1,3 +1,4 @@
+import { gsap } from "/lib/gsap/all.js";
 import MathUtil from "../utility/mathUtil.js";
 import GameData from "../gameData.js";
 import { Coordinate } from "../map/coordinate.js";
@@ -19,6 +20,7 @@ class Entity extends PIXI.Container {
     this.addChild(this.sprite);
 
     this.isAlive = true;
+    this.isInvulnerable = false;
     this.isEnabled = false;
     this.coordinate = new Coordinate(-1, -1);
 
@@ -60,6 +62,27 @@ class Entity extends PIXI.Container {
     this.disable();
     GameData.map.removeOccupationOfCoordinate(this.coordinate, this);
     this.onDeath(instigator);
+  }
+
+  giveInvulnerability(duration) {
+    this.setInvulnerable(true);
+
+    let repeat = duration / 0.5;
+    if (repeat % 2 === 0) { repeat++; }
+    else { repeat = (repeat % 2 > 1 ? Math.floor(repeat) : Math.ceil(repeat)); }
+
+    this.invulnerabilityEffect = gsap.fromTo(this.sprite, duration / repeat,
+      { alpha:1 },
+      { alpha:0.5, yoyo:true, repeat, onComplete:()=>{
+          this.sprite.alpha = 1;
+          this.setInvulnerable(false);
+        }
+      }
+    );
+  }
+
+  setInvulnerable(isInvulnerable) {
+    this.isInvulnerable = isInvulnerable;
   }
 
   onDeath(instigator) {
@@ -115,15 +138,6 @@ class Entity extends PIXI.Container {
     return false;
   }
 
-  move(direction) {
-    this.setCoordinate(this.coordinate.plus(direction), true, true);
-    this.onMoved();
-  }
-
-  onMoved() {
-    // Do nothing, extending classes will add behaviour
-  }
-
   checkMove(direction) {
     const result = { isValid:false, tile:null, entity:null };
     if (this.canMove !== true) { return result; }
@@ -150,14 +164,26 @@ class Entity extends PIXI.Container {
       } else { return false; }
     }
 
-    if (moveTest.entity) { this.attackEntity(moveTest.entity); }
-
-    this.move(direction);
+    this.moveAndAttack(direction, moveTest.entity);
     return true;
   }
 
+  move(direction) {
+    this.setCoordinate(this.coordinate.plus(direction), true, true);
+    this.onMoved();
+  }
+
+  moveAndAttack(direction, targetEntity) {
+    if (targetEntity) { this.attackEntity(targetEntity); }
+    this.move(direction);
+  }
+
+  onMoved() {
+    // Do nothing, extending classes will add behaviour
+  }
+
   canAttackEntity(target) {
-    return false;
+    return target.isInvulnerable === false;
   }
 
   attackEntity(target) {

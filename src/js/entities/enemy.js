@@ -22,7 +22,7 @@ class Enemy extends Entity {
   }
 
   canAttackEntity(target) {
-    return target.type === EntityType.Player;
+    return super.canAttackEntity(target) && target.type === EntityType.Player;
   }
 
   attackEntity(target) {

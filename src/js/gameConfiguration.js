@@ -3,6 +3,7 @@ import { EntityType, EntityIds } from "./entities/entityType.js";
 class GameConfiguration {
   constructor() {
     this.player = {
+      spawnInvulnerability: 4,
       initialLives: 2,
       getExtraLifeScore: (extraLifeIndex) => {
          return 1000 * (1 + Math.floor(Math.pow(extraLifeIndex + 1, 3) / 4));
