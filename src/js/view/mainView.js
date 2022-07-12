@@ -43,9 +43,11 @@ class MainView extends PIXI.Container {
     this.endButton.visible = false;
 
     this.scoreText = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
-    this.stageText = new PIXI.Text("STAGE: 0", GameConfiguration.styles.text.generic);
+    this.stageText = new PIXI.Text("STAGE: 0-0", GameConfiguration.styles.text.generic);
     this.livesRemainingText = new PIXI.Text("LIVES: 0", GameConfiguration.styles.text.generic);
     this.extraLifeScoreText = new PIXI.Text("+1 LIFE: 0", GameConfiguration.styles.text.generic);
+    this.highScoreText = new PIXI.Text("HIGH SCORE: 0", GameConfiguration.styles.text.generic);
+    this.highStageText = new PIXI.Text("HIGHEST STAGE: 0-0", GameConfiguration.styles.text.generic);
 
     this.countdown = new PIXI.Text("3", GameConfiguration.styles.text.countdown);
     this.countdown.anchor.set(0.5);
@@ -70,8 +72,12 @@ class MainView extends PIXI.Container {
     this.gameResult.visible = false;
 
     this.addChild(this.frame, this.gameView, this.stageText, this.scoreText,
-      this.livesRemainingText, this.extraLifeScoreText, this.startButton, this.endButton,
-      this.gameResult, this.countdown);
+      this.livesRemainingText, this.extraLifeScoreText, this.highScoreText,
+      this.highStageText, this.startButton, this.endButton, this.gameResult,
+      this.countdown);
+
+    this.setHighScore(GameData.highScore.toFixed(0));
+    this.setHighStage(GameData.highStage.toString());
 
     GameEventHandler.on(GameEvent.PLAYER_DIED, (instigator)=>this.onPlayerDied(instigator));
     GameEventHandler.on(GameEvent.ENEMY_SPAWNED, (enemy)=>this.onEnemySpawned(enemy));
@@ -92,6 +98,14 @@ class MainView extends PIXI.Container {
 
   setExtraLifeScore(score) {
     this.extraLifeScoreText.text = "+1 LIFE: " + score;
+  }
+
+  setHighScore(scoreText) {
+    this.highScoreText.text = "HIGH SCORE: " + scoreText;
+  }
+
+  setHighStage(valueText) {
+    this.highStageText.text = "HIGHEST STAGE: " + valueText;
   }
 
   startGame() {
@@ -158,6 +172,23 @@ class MainView extends PIXI.Container {
   }
 
   endGame() {
+    let highScoreOrStageUpdate = false;
+
+    if (GameData.stage.greaterThan(GameData.highStage)) {
+      GameData.highStage.set(GameData.stage);
+      this.setHighStage(GameData.highStage.toString());
+      highScoreOrStageUpdate = true;
+    }
+    if (GameData.score > GameData.highScore) {
+      GameData.highScore = GameData.score;
+      this.setHighScore(GameData.highScore.toFixed(0));
+      highScoreOrStageUpdate = true;
+    }
+
+    if (highScoreOrStageUpdate) {
+      GameData.writeHighScoresToStorage();
+    }
+
     this.livesRemainingText.visible = false;
     this.extraLifeScoreText.visible = false;
     this.startButton.visible = true;
@@ -325,9 +356,11 @@ class MainView extends PIXI.Container {
 
     this.stageText.position.set(20, actualHeight + 20 + 4);
     this.livesRemainingText.position.set(300, this.stageText.y);
+    this.highStageText.position.set(600, this.stageText.y);
 
     this.scoreText.position.set(20, actualHeight + 40 + 20 + 4);
     this.extraLifeScoreText.position.set(300, this.scoreText.y);
+    this.highScoreText.position.set(600, this.scoreText.y);
 
     this.gameResult.position.set(
       Math.floor(actualWidth / 2),

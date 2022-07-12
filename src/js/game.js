@@ -14,6 +14,7 @@ class Game {
 
   init(resources) {
     GameData.resources = resources;
+    GameData.readHighScoresFromStorage();
 
     this.mainView = new MainView(resources);
     this.application.stage.addChild(this.mainView);

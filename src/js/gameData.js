@@ -1,3 +1,4 @@
+import Parser from "./utility/parser.js";
 import { Stage } from "./utility/stage.js";
 
 class GameData {
@@ -16,6 +17,8 @@ class GameData {
     this.tickTime = 0;
     this.isGameOn = false;
     this.isRoundActive = false;
+    this.highScore = 0;
+    this.highStage = new Stage(0, 0);
   }
 
   getEnemyCount(onlyLiving) {
@@ -26,6 +29,20 @@ class GameData {
 
   getAllEntities() {
     return this.enemies.concat(this.player);
+  }
+
+  readHighScoresFromStorage() {
+    const scoreObject = JSON.parse(window.localStorage.getItem("HighScores") || "{}");
+    if (scoreObject.score) { this.highScore = Parser.parseInt(scoreObject.score); }
+    if (scoreObject.stage) { this.highStage = Parser.parseStage(scoreObject.stage); }
+  }
+
+  writeHighScoresToStorage() {
+    window.localStorage.setItem("HighScores", JSON.stringify({
+        score:this.highScore.toFixed(0),
+        stage:this.highStage.toString()
+      }
+    ));
   }
 }
 
