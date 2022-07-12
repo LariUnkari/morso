@@ -1,9 +1,11 @@
 import MathUtil from "../utility/mathUtil.js";
+import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { Coordinate } from "./coordinate.js";
 import { Tile } from "./tile.js";
 import { TileType } from "./tileType.js";
+import { GridMemory } from "../utility/gridMemory.js";
 
 const GRID_SCALE = 32;
 
@@ -45,7 +47,7 @@ class GridMap extends PIXI.Container {
 
     this.addChild(this.gridContainer, this.corpseContainer, this.entityContainer);
 
-    this.occupiedTiles = {};
+    this.occupiedTiles = new GridMemory();
 
     GameEventHandler.on(GameEvent.ENTITY_SPAWNED, (entity)=>this.onEntitySpawned(entity));
     GameEventHandler.on(GameEvent.ENEMY_DIED, (args)=>this.onEnemyDied(args[0], args[1]));
@@ -64,7 +66,7 @@ class GridMap extends PIXI.Container {
 
   clear() {
     this.wallRatio = 0;
-    this.occupiedTiles = {};
+    this.occupiedTiles.clear();
 
     for (let x = 0; x < this.grid.width; x++) {
       for (let y = 0; y < this.grid.height; y++) {
@@ -87,24 +89,33 @@ class GridMap extends PIXI.Container {
   }
 
   isCoordinateOccupied(coordinate) {
-    return this.occupiedTiles[this.getCoordinateId(coordinate)] !== undefined;
+    return this.occupiedTiles.hasEntry(this.getCoordinateId(coordinate));
   }
 
   getOccupationOfCoordinate(coordinate) {
-    if (this.isCoordinateOutOfBounds(coordinate)) { return null; }
-
-    const coordinateId = this.getCoordinateId(coordinate);
-    return this.occupiedTiles[coordinateId];
+    const occupation = this.occupiedTiles.getEntry(this.getCoordinateId(coordinate));
+    return occupation ? occupation.value : null;
   }
 
   setOccupationOfCoordinate(coordinate, occupier) {
-    if (!occupier || this.isCoordinateOutOfBounds(coordinate)) { return; }
-
     const coordinateId = this.getCoordinateId(coordinate);
-    const previousOccupier = this.occupiedTiles[coordinateId];
+
+    if (!occupier) {
+      console.warn("Unable to set a non-existing occupier to coordinate '" +
+        coordinateId + "' " + coordinate.toString());
+      return;
+    }
+
+    if (this.isCoordinateOutOfBounds(coordinate)) {
+      console.warn("Unable to set a occupier '" + occupier.entityName + "' to out of bounds coordinate '" +
+        coordinateId + "' " + coordinate.toString());
+      return;
+    }
+
+    const previousOccupier = this.getOccupationOfCoordinate(coordinate);
 
     if (!previousOccupier) {
-      this.occupiedTiles[coordinateId] = occupier;
+      this.occupiedTiles.setEntry(coordinateId, coordinate, GameData.tickTime, occupier);
     } else {
       console.warn("Unable to set a occupier '" + occupier.entityName + "' to coordinate '" +
         coordinateId + "' " + coordinate.toString() + ", expected undefined, found " +
@@ -113,13 +124,24 @@ class GridMap extends PIXI.Container {
   }
 
   removeOccupationOfCoordinate(coordinate, occupier) {
-    if (!occupier || this.isCoordinateOutOfBounds(coordinate)) { return; }
-
     const coordinateId = this.getCoordinateId(coordinate);
-    const previousOccupier = this.occupiedTiles[coordinateId];
+
+    if (!occupier) {
+      console.warn("Unable to remove a non-existing occupier from coordinate '" +
+        coordinateId + "' " + coordinate.toString());
+      return;
+    }
+
+    if (this.isCoordinateOutOfBounds(coordinate)) {
+      console.warn("Unable to remove an occupier '" + occupier.entityName +
+        "' to out of bounds coordinate '" + coordinateId + "' " + coordinate.toString());
+      return;
+    }
+
+    const previousOccupier = this.getOccupationOfCoordinate(coordinate);
 
     if (occupier === previousOccupier) {
-      this.occupiedTiles[coordinateId] = undefined;
+      this.occupiedTiles.removeEntry(coordinateId);
     } else {
       console.warn("Unable to remove a non-matching occupier from coordinate '" +
         coordinateId + "' " + coordinate.toString() + ", expected " + occupier.entityName +

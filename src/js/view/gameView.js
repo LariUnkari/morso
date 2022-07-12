@@ -70,7 +70,7 @@ class GameView extends PIXI.Container {
   reSpawnPlayer() {
     const preferredCoordinate = new Coordinate(5, 10);
     const startTile = FillSearch.findNearestTileOfType(GameData.map,
-      preferredCoordinate, TileType.Floor);
+      preferredCoordinate, TileType.Floor, false);
 
     GameData.player.setCoordinate(startTile.coordinate, false, true);
     GameData.player.visible = true;
@@ -82,7 +82,7 @@ class GameView extends PIXI.Container {
     const options = GameConfiguration.entities[EntityIds[type]];
     const monster = new Monster(name, type, options);
     const startTile = FillSearch.findNearestTileOfType(GameData.map,
-      preferredCoordinate, TileType.Floor);
+      preferredCoordinate, TileType.Floor, false);
 
     GameEventHandler.emit(GameEvent.ENTITY_SPAWNED, monster);
 

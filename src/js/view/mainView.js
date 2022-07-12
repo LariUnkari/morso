@@ -193,6 +193,10 @@ class MainView extends PIXI.Container {
       return;
     }
 
+    if (!GameData.player.isAlive && GameData.livesRemaining > 0) {
+      this.gameView.reSpawnPlayer();
+    }
+
     if (this.checkGameEnded()) {
       this.endRound(false);
       this.showRoundResult(false);
@@ -216,10 +220,6 @@ class MainView extends PIXI.Container {
     console.log("Player was killed by " + instigator.entityName + " at " + instigator.coordinate.toString());
     GameData.livesRemaining -= 1;
     this.setLives(GameData.livesRemaining);
-
-    if (GameData.livesRemaining > 0) {
-      this.gameView.reSpawnPlayer();
-    }
   }
 
   onEnemySpawned(spawnedEnemy) {

@@ -6,13 +6,14 @@ import { GameEvent } from "../gameEvent.js";
 import { Enemy } from "./enemy.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 import { Direction, GridDirections } from "../map/direction.js";
+import { GridMemory } from "../utility/gridMemory.js";
 
 class Monster extends Enemy {
   constructor(name, type, options) {
     super(name, type, options);
 
     this.stuckMemoryCount = 0;
-    this.stuckCoordinates = {};
+    this.stuckCoordinates = new GridMemory();
   }
 
   processOptions(options) {
@@ -94,6 +95,8 @@ class Monster extends Enemy {
   }
 
   onMoveTime() {
+    super.onMoveTime();
+
     this.handleStuckMemory();
 
     if (GameData.player === null) {
@@ -105,47 +108,9 @@ class Monster extends Enemy {
       return;
     }
 
-    let moveTest = null;
-    let desiredDirection = this.getBestDirectionToPlayer();
-    let targetCoordinate = this.coordinate.plus(desiredDirection);
-
-    if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
-      if (!this.tryMove(desiredDirection)) {
-        console.warn(this.entityName + ": Unable to move to visible direction to " + targetCoordinate.toString());
-      }
-      return;
-    }
-
-    if (this.checkWasStuckAt(targetCoordinate)) {
-      desiredDirection = null;
-    } else {
-      if (this.tryMove(desiredDirection)) {
-        return;
-      }
-    }
-
-    const directions = [];
-    let validDirs = 0;
-
-    for (let dir of GridDirections) {
-      if (dir.equals(desiredDirection)) { continue; } // Was already unable to move there
-      moveTest = this.checkMove(dir);
-      targetCoordinate = this.coordinate.plus(dir);
-
-      if (moveTest.isValid) {
-        validDirs++;
-
-        if (!this.checkWasStuckAt(targetCoordinate)) { directions.push(dir); }
-      }
-    }
-
-    if (validDirs <= 1) {
-      this.stuckCoordinates[GameData.map.getCoordinateId(this.coordinate)] = { coordinate:this.coordinate, time:GameData.tickTime };
-      this.stuckMemoryCount = Object.keys(this.stuckCoordinates).length;
-    }
+    const directions = this.getMoveDirections();
 
     if (directions.length === 0) { return; }
-
     if (directions.length === 1) {
       this.move(directions[0]);
       return;
@@ -153,6 +118,53 @@ class Monster extends Enemy {
 
     const dirIndex = Math.floor(directions.length * Math.random());
     this.move(directions[dirIndex]);
+  }
+
+  getMoveDirections() {
+    let desiredDirection = this.getBestDirectionToPlayer();
+    let targetCoordinate = this.coordinate.plus(desiredDirection);
+
+    if (this.checkVisibilityTo(desiredDirection, GameData.player.coordinate)) {
+      if (!this.tryMove(desiredDirection)) {
+        console.warn(this.entityName + ": Unable to move to visible direction to " +
+          targetCoordinate.toString());
+      }
+      return [];
+    }
+
+    let moveTest;
+
+    if (this.checkWasStuckAt(targetCoordinate)) {
+      desiredDirection = null;
+    } else {
+      moveTest = this.checkMove(desiredDirection);
+      if (moveTest.isValid) { return [desiredDirection]; }
+    }
+
+    const directions = [];
+    let validDirs = 0;
+
+    for (let dir of GridDirections) {
+      // Was already unable to move there
+      if (!desiredDirection || desiredDirection.equals(dir)) { continue; }
+
+      moveTest = this.checkMove(dir);
+      targetCoordinate = this.coordinate.plus(dir);
+
+      if (moveTest.isValid) {
+        validDirs++;
+        if (!this.checkWasStuckAt(targetCoordinate)) { directions.push(dir); }
+      }
+    }
+
+    const coordinateId = GameData.map.getCoordinateId(this.coordinate);
+
+    if (validDirs <= 1) {
+      this.stuckCoordinates.setEntry(coordinateId, this.coordinate, GameData.tickTime, null);
+      this.stuckMemoryCount = this.stuckCoordinates.getKeys().length;
+    }
+
+    return directions;
   }
 
   move(direction) {
@@ -178,17 +190,18 @@ class Monster extends Enemy {
   }
 
   checkWasStuckAt(coordinate) {
-    return this.stuckCoordinates[GameData.map.getCoordinateId(coordinate)] !== undefined;
+    return this.stuckCoordinates.hasEntry(GameData.map.getCoordinateId(coordinate));
   }
 
   handleStuckMemory() {
     if (this.stuckMemoryCount === 0) { return; }
 
-    let timePassed;
+    let stuckEntry, timePassed;
     let forgetList = [];
 
-    for (let id of Object.keys(this.stuckCoordinates)) {
-      timePassed = GameData.tickTime - this.stuckCoordinates[id].time;
+    for (let id of this.stuckCoordinates.getKeys()) {
+      stuckEntry = this.stuckCoordinates.getEntry(id);
+      timePassed = GameData.tickTime - stuckEntry.time;
 
       if (timePassed >= this.moveInterval * this.stuckMemoryDuration) {
         forgetList.push(id);
@@ -196,10 +209,10 @@ class Monster extends Enemy {
     }
 
     for (let id of forgetList) {
-      delete this.stuckCoordinates[id];
+      this.stuckCoordinates.removeEntry(id);
     }
 
-    this.stuckMemoryCount = Object.keys(this.stuckCoordinates).length;
+    this.stuckMemoryCount = this.stuckCoordinates.getKeys().length;
   }
 }
 

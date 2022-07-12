@@ -1,18 +1,22 @@
 import { Direction, GridDirections } from "./direction.js";
 
-var findNearestTileOfType = (map, coordinate, type) => {
+var findNearestTileOfType = (map, coordinate, type, allowOccupied) => {
 
   const result = { found:false, tile:null };
-  findNearestTileOfTypeStepper(map, coordinate, type, {}, result);
+  findNearestTileOfTypeStepper(map, coordinate, type, allowOccupied, {}, result);
   return result.found ? result.tile : null;
 };
 
-var findNearestTileOfTypeStepper = (map, coordinate, type, closed, result) => {
+var findNearestTileOfTypeStepper = (map, coordinate, type, allowOccupied, closed, result) => {
   result.tile = map.getTileAtCoordinates(coordinate);
 
   if (result.tile.type === type) {
-    result.found = true;
-    return;
+    if (allowOccupied || !map.isCoordinateOccupied(coordinate)) {
+      result.found = true;
+      return;
+    } else {
+        map.getOccupationOfCoordinate(coordinate).entityName);
+    }
   }
 
   closed[result.tile.id] = result.tile;
@@ -24,7 +28,7 @@ var findNearestTileOfTypeStepper = (map, coordinate, type, closed, result) => {
     if (map.isCoordinateOutOfBounds(nextCoordinate)) { continue; }
     if (closed[map.getCoordinateId(nextCoordinate)] !== undefined) { continue; }
 
-    findNearestTileOfTypeStepper(map, nextCoordinate, type, closed, result);
+    findNearestTileOfTypeStepper(map, nextCoordinate, type, allowOccupied, closed, result);
     if (result.found === true) { break; }
   }
 };
