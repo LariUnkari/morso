@@ -31,15 +31,11 @@ class MainView extends PIXI.Container {
     this.gameView = new GameView(resources);
     this.gameView.position.set(4, 4);
 
-    this.startButton = new PIXI.Text("START", GameConfiguration.styles.text.generic);
-    this.startButton.interactive = true;
-    this.startButton.buttonMode = true;
-    this.startButton.on("click", this.onClickStart.bind(this));
+    this.startButton = this.createTextButton("START",
+      GameConfiguration.styles.button.confirm, this.onClickStart.bind(this));
 
-    this.endButton = new PIXI.Text("QUIT", GameConfiguration.styles.button.decline);
-    this.endButton.interactive = true;
-    this.endButton.buttonMode = true;
-    this.endButton.on("click", this.onClickEnd.bind(this));
+    this.endButton = this.createTextButton("QUIT",
+      GameConfiguration.styles.button.decline, this.onClickEnd.bind(this));
     this.endButton.visible = false;
 
     this.scoreText = new PIXI.Text("SCORE: 0", GameConfiguration.styles.text.generic);
@@ -82,6 +78,13 @@ class MainView extends PIXI.Container {
     GameEventHandler.on(GameEvent.PLAYER_DIED, (instigator)=>this.onPlayerDied(instigator));
     GameEventHandler.on(GameEvent.ENEMY_SPAWNED, (enemy)=>this.onEnemySpawned(enemy));
     GameEventHandler.on(GameEvent.ENEMY_DIED, (args)=>this.onEnemyDied(args[0], args[1]));
+  }
+
+  createTextButton(title, style, onClick) {
+    const textHeight = Math.floor(0.75 * style.fontSize);
+    const text = new PIXI.Text(title, style);
+    text.pivot = new PIXI.Point(text.width >> 1, Math.floor(style.yMidPoint*text.height));
+    return new FramedButton(text, text.width, textHeight, style.fill, onClick);
   }
 
   setStage(stage) {
