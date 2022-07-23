@@ -65,8 +65,8 @@ class GameConfiguration {
         resultDescription: { fontFamily:"Minecraft", fontSize:32, fill:0xFFFFFF }
       },
       button: {
-        confirm: { fontFamily:"Minecraft", fontSize:32, fill:0xFF0000 },
-        decline: { fontFamily:"Minecraft", fontSize:32, fill:0xFF0000 }
+        confirm: { fontFamily:"Minecraft", fontSize:32, fill:0xFFFFFF, yMidPoint:0.45 },
+        decline: { fontFamily:"Minecraft", fontSize:32, fill:0xFF0000, yMidPoint:0.45 }
       }
     };
   }
