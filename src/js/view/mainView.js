@@ -4,6 +4,7 @@ import GameData from "../gameData.js";
 import GameEventHandler from "../gameEventHandler.js";
 import { GameEvent } from "../gameEvent.js";
 import { GameView } from "./gameView.js";
+import { FramedButton } from "./framedButton.js";
 import { Stage } from "../utility/stage.js";
 import { EntityType, EntityIds } from "../entities/entityType.js";
 
