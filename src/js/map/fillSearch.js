@@ -14,8 +14,6 @@ var findNearestTileOfTypeStepper = (map, coordinate, type, allowOccupied, closed
     if (allowOccupied || !map.isCoordinateOccupied(coordinate)) {
       result.found = true;
       return;
-    } else {
-        map.getOccupationOfCoordinate(coordinate).entityName);
     }
   }
 
