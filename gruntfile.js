@@ -14,6 +14,7 @@ module.exports = function(grunt) {
       main: {
         files: [
           { expand:false, src:'src/index.html', dest:'build/index.html' },
+          { expand:false, src:'src/favicon.ico', dest:'build/favicon.ico' },
           { expand:true, cwd:'src/js', src:['**'], dest:'build/js' },
           { expand:true, cwd:'src/css', src:['**'], dest:'build/css' },
           { expand:true, cwd:'src/assets/fonts', src:['**'], dest:'build/assets/fonts' },
